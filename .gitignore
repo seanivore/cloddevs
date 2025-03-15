@@ -45,7 +45,6 @@ curr_ctx.toml
 .llm-context/*
 
 # Standard directory
-.notes/*
 .planning/*
 .idea/*
 

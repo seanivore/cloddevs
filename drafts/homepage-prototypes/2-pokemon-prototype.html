@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>$CLAUD Protocol - Pokémon-Inspired Landing Page</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #000;
+            font-family: 'Courier New', monospace;
+        }
+        canvas { 
+            display: block; 
+            image-rendering: pixelated;
+        }
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: #1a1a1a;
+            color: #a0a0a0;
+            padding: 8px 12px;
+            border: 1px solid #404040;
+            max-width: 300px;
+            font-size: 12px;
+        }
+        .speech-bubble {
+            position: absolute;
+            background: #f8f8f8;
+            color: #101010;
+            border: 4px double #585858;
+            padding: 12px;
+            display: none;
+            max-width: 80%;
+            left: 10%;
+            bottom: 30px;
+            font-size: 12px;
+            line-height: 1.3;
+        }
+        .podcast-player {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            color: #a0a0a0;
+            padding: 8px 12px;
+            border: 1px solid #404040;
+            font-size: 12px;
+        }
+        .controls button {
+            background: #2a2a2a;
+            color: #a0a0a0;
+            border: 1px solid #404040;
+            padding: 4px 8px;
+            margin-right: 5px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .controls button:hover {
+            background: #303030;
+        }
+    </style>
+</head>
+<body>
+    <div id="info" class="info-panel">use arrow keys to move | space bar to interact</div>
+    <div id="speech" class="speech-bubble">$CLAUD Protocol</div>
+    <div class="podcast-player">
+        <div>$CLAUD PODCAST</div>
+        <div class="controls">
+            <button id="play-btn">► Play</button>
+            <button id="stop-btn">■ Stop</button>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Main game variables
+        let player;
+        let buildings = [];
+        let currentBuilding = null;
+        let isInteracting = false;
+        
+        // Set up scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x9db7f5); // Classic Pokémon Blue background color
+        
+        // Camera - true top-down like original Pokémon
+        const camera = new THREE.OrthographicCamera(
+            window.innerWidth / -100, window.innerWidth / 100,
+            window.innerHeight / 100, window.innerHeight / -100,
+            0.1, 1000
+        );
+        camera.position.set(0, 10, 0);
+        camera.lookAt(0, 0, 0);
+        
+        // Renderer with pixelated style
+        const renderer = new THREE.WebGLRenderer({ antialias: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+        // Create a main town path that runs vertically
+        function createTownPath() {
+            const pathGeometry = new THREE.PlaneGeometry(4, 30);
+            const pathTexture = createPixelatedTexture([
+                [0xb5a088, 0xb5a088, 0xb5a088, 0xb5a088],
+                [0xa59078, 0xa59078, 0xa59078, 0xa59078],
+                [0xb5a088, 0xb5a088, 0xb5a088, 0xb5a088],
+                [0xa59078, 0xa59078, 0xa59078, 0xa59078]
+            ], 4, 4);
+            
+            const pathMaterial = new THREE.MeshBasicMaterial({ 
+                map: pathTexture,
+                side: THREE.DoubleSide
+            });
+            
+            const path = new THREE.Mesh(pathGeometry, pathMaterial);
+            path.rotation.x = Math.PI / 2;
+            path.position.y = 0.01;
+            scene.add(path);
+            
+            return path;
+        }
+        
+        // Create the surrounding grass terrain
+        function createTerrain() {
+            const terrainGeometry = new THREE.PlaneGeometry(40, 40);
+            const terrainTexture = createPixelatedTexture([
+                [0x7bae58, 0x86c06c],
+                [0x86c06c, 0x7bae58]
+            ], 2, 2);
+            
+            const terrainMaterial = new THREE.MeshBasicMaterial({ 
+                map: terrainTexture,
+                side: THREE.DoubleSide
+            });
+            
+            const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
+            terrain.rotation.x = Math.PI / 2;
+            terrain.position.y = 0;
+            scene.add(terrain);
+            
+            return terrain;
+        }
+        
+        // Create pixelated texture for materials
+        function createPixelatedTexture(colorData, width, height) {
+            const size = width * height;
+            const data = new Uint8Array(3 * size);
+            
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    const color = colorData[i % colorData.length][j % colorData[0].length];
+                    const index = (i * width + j) * 3;
+                    
+                    data[index] = (color >> 16) & 255;
+                    data[index + 1] = (color >> 8) & 255;
+                    data[index + 2] = color & 255;
+                }
+            }
+            
+            const texture = new THREE.DataTexture(data, width, height, THREE.RGBFormat);
+            texture.magFilter = THREE.NearestFilter;
+            texture.minFilter = THREE.NearestFilter;
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(5, 5);
+            texture.needsUpdate = true;
+            
+            return texture;
+        }
+        
+        // Create a Pokémon-style building
+        function createBuilding(x, z, type, name, description) {
+            const building = new THREE.Group();
+            
+            // Base colors based on building type
+            let roofColor, wallColor, accentColor;
+            
+            switch(type) {
+                case 'protocol':
+                    roofColor = 0xc84c0c; // Red roof
+                    wallColor = 0xf8f8f8; // White walls
+                    accentColor = 0x585858; // Dark accents
+                    break;
+                case 'developer':
+                    roofColor = 0x3050c8; // Blue roof
+                    wallColor = 0xf8f8f8; // White walls
+                    accentColor = 0x585858; // Dark accents
+                    break;
+                case 'blockchain':
+                    roofColor = 0x78a830; // Green roof
+                    wallColor = 0xf8f8f8; // White walls
+                    accentColor = 0x585858; // Dark accents
+                    break;
+                default:
+                    roofColor = 0x7038a8; // Purple roof
+                    wallColor = 0xf8f8f8; // White walls
+                    accentColor = 0x585858; // Dark accents
+            }
+            
+            // Create walls
+            const wallGeometry = new THREE.BoxGeometry(3, 2, 3);
+            const wallMaterial = new THREE.MeshBasicMaterial({ color: wallColor });
+            const walls = new THREE.Mesh(wallGeometry, wallMaterial);
+            walls.position.y = 1;
+            building.add(walls);
+            
+            // Create roof
+            const roofGeometry = new THREE.BoxGeometry(3.5, 0.5, 3.5);
+            const roofMaterial = new THREE.MeshBasicMaterial({ color: roofColor });
+            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+            roof.position.y = 2.25;
+            building.add(roof);
+            
+            // Create door
+            const doorGeometry = new THREE.PlaneGeometry(0.8, 1.2);
+            const doorMaterial = new THREE.MeshBasicMaterial({ color: accentColor, side: THREE.DoubleSide });
+            const door = new THREE.Mesh(doorGeometry, doorMaterial);
+            door.position.set(0, 0.6, 1.51);
+            building.add(door);
+            
+            // Add windows
+            const windowGeometry = new THREE.PlaneGeometry(0.6, 0.6);
+            const windowMaterial = new THREE.MeshBasicMaterial({ color: 0x88c8f8, side: THREE.DoubleSide });
+            
+            const window1 = new THREE.Mesh(windowGeometry, windowMaterial);
+            window1.position.set(-1, 1.2, 1.51);
+            building.add(window1);
+            
+            const window2 = new THREE.Mesh(windowGeometry, windowMaterial);
+            window2.position.set(1, 1.2, 1.51);
+            building.add(window2);
+            
+            // Position the building
+            building.position.set(x, 0, z);
+            building.userData = { 
+                name: name,
+                description: description,
+                type: type
+            };
+            
+            scene.add(building);
+            buildings.push(building);
+            return building;
+        }
+        
+        // Create player character
+        function createPlayer() {
+            const playerGroup = new THREE.Group();
+            
+            // Body
+            const bodyGeometry = new THREE.BoxGeometry(0.8, 1, 0.8);
+            const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0x3050c8 }); // Blue outfit
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 0.5;
+            playerGroup.add(body);
+            
+            // Head
+            const headGeometry = new THREE.BoxGeometry(0.7, 0.7, 0.7);
+            const headMaterial = new THREE.MeshBasicMaterial({ color: 0xf8c888 }); // Skin tone
+            const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.position.y = 1.4;
+            playerGroup.add(head);
+            
+            // Hat
+            const hatGeometry = new THREE.BoxGeometry(0.7, 0.2, 0.7);
+            const hatMaterial = new THREE.MeshBasicMaterial({ color: 0xc83030 }); // Red hat
+            const hat = new THREE.Mesh(hatGeometry, hatMaterial);
+            hat.position.y = 1.75;
+            playerGroup.add(hat);
+            
+            // Position the player
+            playerGroup.position.set(0, 0, 8);
+            scene.add(playerGroup);
+            
+            return playerGroup;
+        }
+        
+        // Initialize the scene
+        function init() {
+            // Create the environment
+            createTerrain();
+            const mainPath = createTownPath();
+            
+            // Create buildings along the path
+            createBuilding(4, -6, 'protocol', "Protocol Hub", 
+                "The core technology behind $CLAUD Protocol, connecting AI developers with the Solana blockchain ecosystem.");
+                
+            createBuilding(-4, -2, 'developer', "Developer Studio", 
+                "Tools and resources for AI developers to build, test, and deploy models using the $CLAUD Protocol.");
+                
+            createBuilding(4, 2, 'blockchain', "Blockchain Integration", 
+                "Seamless integration with Solana blockchain for secure, efficient AI model deployment and monetization.");
+                
+            createBuilding(-4, 6, 'portfolio', "Portfolio Gallery", 
+                "Showcase of applications and use cases built with the $CLAUD Protocol.");
+            
+            // Create player character
+            player = createPlayer();
+            
+            // Show initial welcome message
+            setTimeout(() => {
+                showMessage("Welcome to $CLAUD Protocol town! Use arrow keys to move and space to interact with buildings.");
+            }, 1000);
+        }
+        
+        // Handle keyboard input for player movement
+        const keyState = {};
+        window.addEventListener('keydown', (event) => {
+            keyState[event.code] = true;
+            
+            // Space bar for interaction
+            if (event.code === 'Space' && currentBuilding && !isInteracting) {
+                interact();
+            }
+        });
+        
+        window.addEventListener('keyup', (event) => {
+            keyState[event.code] = false;
+        });
+        
+        // Check if player is near a building
+        function checkBuildingProximity() {
+            let nearestBuilding = null;
+            let minDistance = 3; // Interaction distance
+            
+            buildings.forEach(building => {
+                const distance = Math.sqrt(
+                    Math.pow(player.position.x - building.position.x, 2) +
+                    Math.pow(player.position.z - building.position.z, 2)
+                );
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestBuilding = building;
+                }
+            });
+            
+            if (nearestBuilding !== currentBuilding) {
+                currentBuilding = nearestBuilding;
+                if (currentBuilding) {
+                    showInfo(`Press space to learn about ${currentBuilding.userData.name}`);
+                } else {
+                    showInfo("Use arrow keys to move | space bar to interact");
+                }
+            }
+        }
+        
+        // Interact with current building
+        function interact() {
+            if (!currentBuilding || isInteracting) return;
+            
+            isInteracting = true;
+            showMessage(`<strong>${currentBuilding.userData.name}</strong><br>${currentBuilding.userData.description}`);
+            
+            // Reset interaction after message closes
+            setTimeout(() => {
+                isInteracting = false;
+            }, 5000);
+        }
+        
+        // Show message in speech bubble
+        function showMessage(text) {
+            const speechBubble = document.getElementById('speech');
+            speechBubble.innerHTML = text;
+            speechBubble.style.display = 'block';
+            
+            setTimeout(() => {
+                speechBubble.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Show info in info panel
+        function showInfo(text) {
+            document.getElementById('info').textContent = text;
+        }
+        
+        // Podcast player functionality
+        let isPlaying = false;
+        document.getElementById('play-btn').addEventListener('click', () => {
+            isPlaying = true;
+            showMessage("<strong>$CLAUD PROTOCOL PODCAST</strong><br>The cultural and economic importance of blockchain-AI integration.");
+            document.getElementById('play-btn').textContent = "■ Playing";
+        });
+        
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            isPlaying = false;
+            document.getElementById('speech').style.display = 'none';
+            document.getElementById('play-btn').textContent = "► Play";
+        });
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Move player based on keyboard input
+            if (!isInteracting) {
+                const moveSpeed = 0.1;
+                if (keyState['ArrowUp']) player.position.z -= moveSpeed;
+                if (keyState['ArrowDown']) player.position.z += moveSpeed;
+                if (keyState['ArrowLeft']) player.position.x -= moveSpeed;
+                if (keyState['ArrowRight']) player.position.x += moveSpeed;
+                
+                // Face the direction of movement
+                if (keyState['ArrowUp']) player.rotation.y = Math.PI;
+                if (keyState['ArrowDown']) player.rotation.y = 0;
+                if (keyState['ArrowLeft']) player.rotation.y = Math.PI / 2;
+                if (keyState['ArrowRight']) player.rotation.y = -Math.PI / 2;
+                
+                // Limit player movement area
+                player.position.x = Math.max(-8, Math.min(8, player.position.x));
+                player.position.z = Math.max(-10, Math.min(10, player.position.z));
+                
+                // Check if player is near a building
+                checkBuildingProximity();
+                
+                // Make camera follow player
+                camera.position.x = player.position.x;
+                camera.position.z = player.position.z + 2; // Offset to see ahead
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.left = window.innerWidth / -100;
+            camera.right = window.innerWidth / 100;
+            camera.top = window.innerHeight / 100;
+            camera.bottom = window.innerHeight / -100;
+            camera.updateProjectionMatrix();
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Initialize and start animation
+        init();
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>$CLAUD Protocol - Pokémon-Inspired Landing Page</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #000;
+        }
+        canvas { display: block; }
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: #1a1a1a;
+            color: #a0a0a0;
+            padding: 8px 12px;
+            border: 1px solid #404040;
+            font-family: 'Courier New', monospace;
+            max-width: 300px;
+            font-size: 12px;
+        }
+        .speech-bubble {
+            position: absolute;
+            background: #202020;
+            color: #a0a0a0;
+            border: 1px solid #404040;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            display: none;
+            max-width: 250px;
+            font-size: 12px;
+            line-height: 1.3;
+        }
+        .podcast-player {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            color: #a0a0a0;
+            padding: 8px 12px;
+            border: 1px solid #404040;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .controls button {
+            background: #2a2a2a;
+            color: #a0a0a0;
+            border: 1px solid #404040;
+            padding: 4px 8px;
+            margin-right: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+        .controls button:hover {
+            background: #303030;
+        }
+    </style>
+</head>
+<body>
+    <div id="info" class="info-panel">use arrow keys to move | click buildings to interact</div>
+    <div id="speech" class="speech-bubble">$CLAUD Protocol</div>
+    <div class="podcast-player">
+        <div>$CLAUD PODCAST</div>
+        <div class="controls">
+            <button id="play-btn">► Play</button>
+            <button id="stop-btn">■ Stop</button>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Set up scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x181c2a); // Dark blue-gray background similar to vintage UI
+        
+        // Camera
+        const camera = new THREE.OrthographicCamera(
+            window.innerWidth / -200, window.innerWidth / 200,
+            window.innerHeight / 200, window.innerHeight / -200,
+            1, 1000
+        );
+        // More top-down view to better match original Pokémon perspective
+        camera.position.set(0, 8, 0.1);
+        camera.lookAt(0, 0, 0);
+        
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+        // Create ground detail texture - simple grid pattern
+        const gridSize = 20; // Number of squares in the grid
+        const gridGeometry = new THREE.PlaneGeometry(10, 10);
+        const gridMaterial = new THREE.MeshBasicMaterial({
+            color: 0x32424a,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        const gridMesh = new THREE.Mesh(gridGeometry, gridMaterial);
+        gridMesh.rotation.x = Math.PI / 2;
+        gridMesh.position.y = 0.002; // Slightly above ground
+        scene.add(gridMesh);
+        
+        // Create ground with vintage pixel texture feel
+        const groundGeometry = new THREE.PlaneGeometry(10, 10, 10, 10);
+        const groundMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x283438,  // Very muted dark green/gray
+            side: THREE.DoubleSide,
+            wireframe: false
+        });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = Math.PI / 2;
+        scene.add(ground);
+        
+        // Create paths with more retro aesthetic
+        function createPath(startX, startZ, endX, endZ) {
+            const pathGeometry = new THREE.PlaneGeometry(
+                Math.abs(endX - startX) || 0.5, 
+                Math.abs(endZ - startZ) || 0.5
+            );
+            const pathMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x40464a,  // Very subtle path color
+                side: THREE.DoubleSide
+            });
+            const path = new THREE.Mesh(pathGeometry, pathMaterial);
+            path.rotation.x = Math.PI / 2;
+            path.position.y = 0.01; // Slightly above ground
+            path.position.x = (startX + endX) / 2;
+            path.position.z = (startZ + endZ) / 2;
+            scene.add(path);
+        }
+        
+        // Create central plaza
+        const plazaGeometry = new THREE.CircleGeometry(1.5, 4); // Square-ish with fewer segments
+        const plazaMaterial = new THREE.MeshBasicMaterial({ color: 0x3f4754 }); // Subtle contrast
+        const plaza = new THREE.Mesh(plazaGeometry, plazaMaterial);
+        plaza.rotation.x = -Math.PI / 2;
+        plaza.position.y = 0.01; // Slightly above ground to prevent z-fighting
+        scene.add(plaza);
+        
+        // Create paths from plaza to buildings
+        createPath(0, 0, 0, -3);
+        createPath(0, 0, 3, 0);
+        createPath(0, 0, -3, 0);
+        createPath(0, 0, 0, 3);
+        
+        // Create buildings with minimal pixel-art style
+        function createBuilding(x, z, color, name, description) {
+            const group = new THREE.Group();
+            
+            // Base - more blocky/pixelated
+            const baseGeometry = new THREE.BoxGeometry(1, 0.5, 1);
+            const baseMaterial = new THREE.MeshBasicMaterial({ color: 0x4a4a52 }); // Dark gray
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = 0.25;
+            group.add(base);
+            
+            // Roof - simpler shape
+            const roofGeometry = new THREE.BoxGeometry(1.2, 0.2, 1.2); // Flat roofs like early games
+            const roofMaterial = new THREE.MeshBasicMaterial({ color: color });
+            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+            roof.position.y = 0.6;
+            group.add(roof);
+            
+            // Add a simple door
+            const doorGeometry = new THREE.PlaneGeometry(0.2, 0.3);
+            const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x2a2a30 });
+            const door = new THREE.Mesh(doorGeometry, doorMaterial);
+            door.position.set(0, 0.25, 0.51); // Positioned on front face
+            door.rotation.x = Math.PI * 2; // Facing forward
+            group.add(door);
+            
+            // Position the building
+            group.position.set(x, 0, z);
+            group.userData = { 
+                name: name,
+                description: description
+            };
+            
+            scene.add(group);
+            return group;
+        }
+        
+        // Create buildings with vintage UI-inspired minimalist colors
+        const protocolHub = createBuilding(0, -3, 0x4a6c82, "Protocol Hub", 
+            "The core technology behind $CLAUD Protocol, connecting AI developers with the Solana blockchain ecosystem.");
+            
+        const devStudio = createBuilding(3, 0, 0x465a87, "Developer Studio", 
+            "Tools and resources for AI developers to build, test, and deploy models using the $CLAUD Protocol.");
+            
+        const blockchain = createBuilding(-3, 0, 0x5a5a6c, "Blockchain Integration", 
+            "Seamless integration with Solana blockchain for secure, efficient AI model deployment and monetization.");
+            
+        const portfolio = createBuilding(0, 3, 0x525e77, "Portfolio Gallery", 
+            "Showcase of applications and use cases built with the $CLAUD Protocol.");
+        
+        // Character with pixel-art minimalism
+        const characterGeometry = new THREE.BoxGeometry(0.3, 0.4, 0.3);
+        const characterMaterial = new THREE.MeshBasicMaterial({ color: 0x566270 }); // Muted blue-gray
+        const character = new THREE.Mesh(characterGeometry, characterMaterial);
+        character.position.set(0, 0.2, 0);
+        scene.add(character);
+        
+        // Interaction with buildings
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        
+        // Handle mouse click
+        window.addEventListener('click', (event) => {
+            // Calculate mouse position in normalized device coordinates
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            // Update the raycaster
+            raycaster.setFromCamera(mouse, camera);
+            
+            // Find intersected objects
+            const intersects = raycaster.intersectObjects(scene.children, true);
+            
+            // Check if we hit a building
+            for (let i = 0; i < intersects.length; i++) {
+                let object = intersects[i].object;
+                
+                // Find the parent group (building)
+                while(object && !object.userData.name) {
+                    object = object.parent;
+                }
+                
+                if (object && object.userData.name) {
+                    // Show info about the building
+                    const speechBubble = document.getElementById('speech');
+                    speechBubble.style.display = 'block';
+                    speechBubble.style.left = event.clientX + 'px';
+                    speechBubble.style.top = (event.clientY - 100) + 'px';
+                    speechBubble.innerHTML = `<strong>${object.userData.name}</strong><br>${object.userData.description}`;
+                    
+                    // Hide speech bubble after a delay
+                    setTimeout(() => {
+                        speechBubble.style.display = 'none';
+                    }, 5000);
+                    
+                    break;
+                }
+            }
+        });
+        
+        // Simple character movement with arrow keys or WASD
+        const keyState = {};
+        window.addEventListener('keydown', (event) => {
+            keyState[event.code] = true;
+        });
+        
+        window.addEventListener('keyup', (event) => {
+            keyState[event.code] = false;
+        });
+        
+        // Podcast player functionality with minimalist UI
+        let isPlaying = false;
+        document.getElementById('play-btn').addEventListener('click', () => {
+            isPlaying = true;
+            const speechBubble = document.getElementById('speech');
+            speechBubble.style.display = 'block';
+            speechBubble.style.left = '50%';
+            speechBubble.style.top = '50%';
+            speechBubble.style.transform = 'translate(-50%, -50%)';
+            speechBubble.innerHTML = "<span style='color:#b0b0b0;'>$CLAUD PROTOCOL PODCAST</span><br>The cultural and economic importance of blockchain-AI integration.";
+            document.getElementById('play-btn').textContent = "■ Playing";
+        });
+        
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            isPlaying = false;
+            document.getElementById('speech').style.display = 'none';
+            document.getElementById('play-btn').textContent = "▶ Play";
+        });
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Move character based on keyboard input
+            const moveSpeed = 0.05;
+            if (keyState['ArrowUp'] || keyState['KeyW']) character.position.z -= moveSpeed;
+            if (keyState['ArrowDown'] || keyState['KeyS']) character.position.z += moveSpeed;
+            if (keyState['ArrowLeft'] || keyState['KeyA']) character.position.x -= moveSpeed;
+            if (keyState['ArrowRight'] || keyState['KeyD']) character.position.x += moveSpeed;
+            
+            // Keep character within bounds
+            character.position.x = Math.max(-4.5, Math.min(4.5, character.position.x));
+            character.position.z = Math.max(-4.5, Math.min(4.5, character.position.z));
+            
+            // Make character face direction of movement
+            if (keyState['ArrowRight'] || keyState['KeyD']) character.rotation.y = Math.PI / 2;
+            if (keyState['ArrowLeft'] || keyState['KeyA']) character.rotation.y = -Math.PI / 2;
+            if (keyState['ArrowUp'] || keyState['KeyW']) character.rotation.y = 0;
+            if (keyState['ArrowDown'] || keyState['KeyS']) character.rotation.y = Math.PI;
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Start animation
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Update camera
+            camera.left = window.innerWidth / -200;
+            camera.right = window.innerWidth / 200;
+            camera.top = window.innerHeight / 200;
+            camera.bottom = window.innerHeight / -200;
+            camera.updateProjectionMatrix();
+            
+            // Update renderer
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Show initial welcome message with minimalist styling
+        setTimeout(() => {
+            const speechBubble = document.getElementById('speech');
+            speechBubble.style.display = 'block';
+            speechBubble.style.left = '50%';
+            speechBubble.style.top = '40%';
+            speechBubble.style.transform = 'translate(-50%, -50%)';
+            speechBubble.innerHTML = "<span style='color:#b0b0b0;'>$CLAUD PROTOCOL</span><br>Explore the buildings to learn more about the ecosystem.";
+            
+            setTimeout(() => {
+                speechBubble.style.display = 'none';
+            }, 5000);
+        }, 1000);
+    </script>
+</body>
+</html>
