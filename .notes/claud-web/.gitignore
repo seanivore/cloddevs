@@ -1,0 +1,49 @@
+# Environment variables
+.env
+
+# Aider files
+.aider*
+.aider.chat.history.md
+aider.conf.yml
+.aider.tags.cache.v3
+
+# LLM Context
+curr_ctx.toml
+.llm-context/* 
+
+# Dependencies
+node_modules/
+npm-debug.log*
+/Users/seanivore/Development/claud-coin/taget/*
+
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE/Editor files
+.idea/
+.vscode/*
+*.swp
+*.swo
+*.code-workspace
+.cursorrules
+.cursor/rules/*
+.planning/*
+.grants/
+.crossnote/*
+
+# Make sure we don't accidentally commit any actual project files
+# that might end up in the root temporarily
+*.log
+*.lock
+node_modules/ 

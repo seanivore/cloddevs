@@ -1,6 +1,5 @@
 # Environment variables
 .env
-.example.env
 
 # Virtual environment
 venv/
@@ -11,10 +10,8 @@ __pycache__/
 *.pyc
 
 # Aider files
-.aider*
 .aider.chat.history.md
 .aider.tags.cache.v3
-aider.conf.yml
 
 # Dependencies
 node_modules/
@@ -25,26 +22,17 @@ npm-debug.log*
 # OS files
 .DS_Store
 .DS_Store?
-._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
 Thumbs.db
 
 # IDE/Editor files
-.vscode/
 *.swp
 *.swo
-*.code-workspace
-.cursorrules
-.cursor/rules/*
-.cursor/*
 
-# LLM-Context Tool
-curr_ctx.toml
-.llm-context/*
-
-# Standard directory
-.planning/*
-.idea/*
-
+# Rust specific
+target/
+**/*.rs.bk
+.cargo/
+rusty-tags.vi
