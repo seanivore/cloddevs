@@ -124,8 +124,3 @@ The fourth layer — `upper-layer-3d` — is the 3D elements created from the 
 The fifth layer — `top-layer-ui` — is the UI elements. It will be the same size as the layer it is adding details to, which is `upper-layer-3d`. 
 
 When conceptualizing the movement of the main perspective shift layer, don't think of it as parallax which is much more complex. Think of it as a simple shift in perspective. Simply, it should all move at the same speed the character is walking, but in the opposite direction. 
-
-----
-
-# Art Technical Notes 
-All artwork will be created in Adobe Fresco (all vector) and Adobe Illustrator, to be exported as SVGs unless other file types are requested. 

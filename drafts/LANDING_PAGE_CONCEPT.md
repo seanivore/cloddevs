@@ -1,32 +1,34 @@
 # $CLAUD Protocol Landing Page Concept
+
 ## Pokémon-Inspired Interactive Experience
 
-### Core Design Concept
-An interactive top-down town square inspired by classic Pokémon games but implemented with modern 3D JS. The environment serves as an engaging way to present the $CLAUD Protocol's value propositions while creating a memorable experience for grant evaluators.
+An interactive top-down neighborhood inspired by classic, 8-bit, original 'Game Boy Color' 'Pokémon Gold' and 'Pokémon Blue' games. Implemented with Three.js, which is so trendy right now. The environment serves as an engaging way to present the $CLAUD Protocol's value propositions while creating a memorable experience for grant evaluators.
 
 ### Visual Style
-- Top-down isometric view of a stylized town square
-- Clean, geometric aesthetic with strategic use of pixel art elements for iconic features
-- Limited but deliberate color palette focused on highlighting key elements
-- Modern interpretation of retro gaming aesthetics rather than pure 8-bit recreation
+- Top-down isometric view of a stylized neighborhood that has a clean, geometric aesthetic with strategic use of pixel art elements for iconic features and a limited but deliberate color palette focused on highlighting key elements
+- Modern interpretation of retro gaming aesthetics rather than pure 8-bit recreation, only because people would be surprised how little they can see back when things were made with 8-bit.
 
 ### Main Elements
 
-#### 1. Town Square Layout
+#### 1. Neighborhood Layout
 - Central plaza with pathways extending to different "buildings" representing key value propositions
 - Distinctive architectural elements for each feature area
 - Compact enough to see all options from starting position
-- Ambient animation to create a living environment (small movements, lighting effects)
+- Ambient animation to create a living environment (small movements like bouncing pink flowers in the grass, lighting effects)
 
 #### 2. Character Representation
-- Stylized, geometric animated version of Sean rather than realistic video
-- Character appears with speech bubbles to introduce concepts
-- Serves as a guide/professor role similar to Professor Oak
+- Stylized, geometric animated character; brown hair boy; glasses, black denim jeans, white t-shirt.
 - Animations triggered at key interaction points
+- Serves as a guide/professor role similar to Professor Oak
 
 #### 3. Interactive Elements
+- On screen load, there are transparent up/down/left/right computer keyboard buttons as UI indicating to the user that they can move around the neighborhood by using their keyboard. 
+- On mobile, the small transparent up/down/left/right computer keyboard buttons remain as UI for the mobile user to move around the neighborhood by tapping the on-screen buttons. 
+- The space of the layout doesn't give much alternative other than approaching each building from the front. 
+- Pressing keyboard buttons or tapping on the on-screen buttons initiates smooth character walking
+-  camera movement to selected locations
 - Cursor hovering reveals brief descriptions of features
-- Clicking initiates smooth camera movement to selected locations
+- 
 - Buildings "open up" or expand when selected to reveal detailed information
 - Optional keyboard controls for accessibility
 
