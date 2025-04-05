@@ -17,20 +17,20 @@ An interactive top-down neighborhood inspired by classic, 8-bit, original 'Game 
 - Ambient animation to create a living environment (small movements like bouncing pink flowers in the grass, lighting effects)
 
 #### 2. Character Representation
-- Stylized, geometric animated character; brown hair boy; glasses, black denim jeans, white t-shirt.
+- Stylized, geometric animated character; brown hair; glasses, black denim jeans, white t-shirt.
 - Animations triggered at key interaction points
 - Serves as a guide/professor role similar to Professor Oak
 
 #### 3. Interactive Elements
-- On screen load, there are transparent up/down/left/right computer keyboard buttons as UI indicating to the user that they can move around the neighborhood by using their keyboard. 
-- On mobile, the small transparent up/down/left/right computer keyboard buttons remain as UI for the mobile user to move around the neighborhood by tapping the on-screen buttons. 
+- On screen load, there are transparent up/down/left/right computer keyboard buttons as UI indicating to the user that they can move the character around the neighborhood by using their keyboard. 
+- On mobile, the small transparent up/down/left/right computer keyboard buttons remain as UI for the mobile user to move the character around the neighborhood by tapping the on-screen buttons. 
 - The space of the layout doesn't give much alternative other than approaching each building from the front. 
-- Pressing keyboard buttons or tapping on the on-screen buttons initiates smooth character walking
--  camera movement to selected locations
-- Cursor hovering reveals brief descriptions of features
-- 
-- Buildings "open up" or expand when selected to reveal detailed information
-- Optional keyboard controls for accessibility
+- Pressing keyboard buttons (desktop: WASD or arrow keys, mobile: on-screen buttons) initiates smooth character walking
+- As the character moves, since most of the map was already visible as top-down isometric view, the camera follows the character smoothly, the ground only moving against the direction of the character's movement a tiny bit to give a sense of depth and a greater speed of movement. 
+- The points where the character is intended to go are highlighted with a slowly pulsing transparent blue highlight, a circle on the ground in front of a building or in front of a character. 
+- When the character is headed towards the vicinity of that point, the highlight pulses faster. 
+- When they reach that point, a large model opens up covering most of the screen except a small 10% gap on all sides of the modal, and a 5-10 px wide transparent white border around the edges of the modal.
+- On the model, the display changes according to the building or character they are approaching; each building is defined in the following section, and the interaction is detailed in `BUILDING_CHARACTER.md`. 
 
 #### 4. Value Proposition Buildings
 - **Protocol Hub**: Central building explaining core technology and purpose
