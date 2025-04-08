@@ -52,6 +52,7 @@ Gamification effectively ensures only the legit answers surface to your technica
 When you participate, it cuts out the noise and amps up the signal. 
 
 **You're paid for your engagement**
+
 Every time you use a tool, comment, post, share a build, exchange knowledge, or otherwise help the community grow.
 
 This is the equivalent of the engagement data social media companies use to tell you what to watch or read next, while pocketing billions in revenue. 
