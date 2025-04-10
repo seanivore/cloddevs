@@ -1,0 +1,74 @@
+/* Basic page reset */
+html, body {
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+  background: #ccc; /* fallback background */
+}
+
+/* (Optional) container for any 2D layered elements, or put them outside this wrapper  */
+#app-container {
+  position: relative;
+  width: 100vw; 
+  height: 100vh;
+}
+
+/* Three.js canvas layer */
+canvas {
+  display: block;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; 
+  height: 100%;
+  z-index: 0; /* you can raise or lower if you add more layers */
+}
+
+/* Simple UI overlay for text or modals */
+#uiLayer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* let clicks pass to the canvas if needed */
+  z-index: 1; /* above the canvas but below other potential layers */
+}
+
+/* Proximity pop-up for buildings, radio tower, etc. */
+.popup {
+  display: none; /* shown via JS when triggered */
+  position: absolute; 
+  top: 20%; left: 10%;
+  width: 80%; 
+  min-height: 30%;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 20px;
+  pointer-events: auto; /* let user click closed */
+  overflow-y: auto;
+}
+.popup h2 {
+  margin-top: 0;
+}
+
+/* Simple close button */
+.close-btn {
+  border: none; 
+  background: #777; 
+  color: #fff; 
+  padding: 8px 12px; 
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* “Radio tower” toggle */
+.radio-toggle {
+  position: absolute;
+  bottom: 20px; 
+  left: 20px;
+  pointer-events: auto; 
+  background: #fff; 
+  padding: 8px 12px; 
+  cursor: pointer;
+  border-radius: 4px;
+}
