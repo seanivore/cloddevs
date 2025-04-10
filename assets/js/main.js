@@ -3,36 +3,76 @@ let scene, camera, renderer;
 let playerMesh, radioAudio, radioToggle;
 let keyboard = {};
 let tower;           // radio tower mesh
-let radioOn = false;
 let welcomeMessageShown = false; // Track if welcome message has been shown
+
+// Game constants
+const MOVEMENT_SPEED = 3;
+const PLAYER_SIZE = 32;
+const INTERACTION_RADIUS = 64;
+const WORLD_SIZE = 1024;
+
+// Game state
+let player = {
+    x: WORLD_SIZE / 2,
+    y: WORLD_SIZE / 2,
+    width: PLAYER_SIZE,
+    height: PLAYER_SIZE,
+    direction: 'down',
+    isMoving: false,
+    frame: 0
+};
+
+let playerSprite = {
+    img: null,
+    frameWidth: 32,
+    frameHeight: 32,
+    totalFrames: 4,
+    currentFrame: 0,
+    frameCounter: 0,
+    frameDelay: 8, // Controls animation speed
+    directions: ['down', 'left', 'right', 'up']
+};
+
+// Input controls
+const keys = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    w: false,
+    a: false,
+    s: false,
+    d: false,
+    space: false
+};
 
 // Building data with text from BUILDING_CHARACTER.md
 const buildingData = [
   {
-    id: 'mcp',
-    position: { x: -15, z: 10 },
-    color: 0xF5C0B8, // Pink building (top left in image)
-    title: 'Shop-Looking Building (MCP)',
-    body: "WE GAMIFIED CODING.\n\n The tools are validated by usage. You earn $CLAUD$ every time you use a minted MCP. Total $CLAUD$ earned by everyone ranks the MCP tools. Knowing what tools are the best is as easy as using your favorites."
-  },
-  {
     id: 'apt',
-    position: { x: 15, z: 10 },
-    color: 0xDDCCAA, // Tan building (top right in image)
+    position: { x: -15, z: -10 }, // Moved to top left
+    color: 0x9E9EB4, // Blue/purple
     title: 'Taller Multi-Story Apartment',
     body: "ZERO MARKETING IN OUR CONTENT FEED.\n\n You earn $CLAUD$ for watching tutorials and reading posts. Tokenization identifies the signal from the noise based on genuine community behavior. No brand can hijack your feed."
   },
   {
+    id: 'mcp',
+    position: { x: 15, z: -10 }, // Top right
+    color: 0x6B9174, // Green
+    title: 'Shop-Looking Building (MCP)',
+    body: "WE GAMIFIED CODING.\n\n The tools are validated by usage. You earn $CLAUD$ every time you use a minted MCP. Total $CLAUD$ earned by everyone ranks the MCP tools. Knowing what tools are the best is as easy as using your favorites."
+  },
+  {
     id: 'ai-ide',
-    position: { x: -15, z: 25 },
-    color: 0xCEEAD6, // Light green building (bottom left in image)
+    position: { x: -15, z: 10 }, // Bottom left
+    color: 0xE8CBB0, // Tan like a house
     title: 'Home with "AI IDE" on Mailbox',
     body: "GET PAID FOR YOUR DATA.\n\n Contribute code or share what you're building. Earn $CLAUD$ for valuable posts. Decentralized community means you keep the revenue; your content grows the ecosystem."
   },
   {
     id: 'gym',
-    position: { x: 15, z: 25 },
-    color: 0xCCCCDD, // Gray/blue building (bottom right in image)
+    position: { x: 15, z: 10 }, // Bottom right
+    color: 0xF5C0B8, // Light pink
     title: 'Gym-Looking Building with $CLAUD$ on Roof',
     body: "IT'S GAMIFIED SOCIAL MEDIA.\n\n You reply to a post, you share knowledge, you earn $CLAUD$. This self-sustaining community automates curation of development resources and fosters a helpful environment."
   }
@@ -40,6 +80,8 @@ const buildingData = [
 
 // This array will store the building meshes after creation
 let buildings = [];
+// This array will store interactive areas
+let interactiveAreas = [];
 
 // === Scene setup ===
 function init() {
@@ -81,14 +123,20 @@ function init() {
 
   // === Create buildings from buildingData ===
   buildingData.forEach(data => {
-    const building = createBuilding(data.position.x, data.position.z, data.color);
+    const building = createBuildingByType(data.id, data.position.x, data.position.z, data.color);
     // attach 'meta' so we know which building it corresponds to
     building.userData = { id: data.id, title: data.title, body: data.body };
     buildings.push(building);
+    
+    // Create interactive area (stoop) in front of each building
+    createInteractiveArea(data.position.x, data.position.z + 6, data.id);
   });
 
   // === Radio tower (placeholder) ===
   createRadioTower();
+  
+  // Create interactive area around radio tower
+  createInteractiveArea(10, -10, 'radio');
 
   // === Add decorative flowers ===
   createFlowers();
@@ -114,108 +162,338 @@ function init() {
 
 // Create ground with different textured sections
 function createGround() {
-  // Main ground
+  // Main ground (grass)
   const groundGeom = new THREE.PlaneGeometry(100, 100);
-  const groundMat = new THREE.MeshLambertMaterial({ color: 0xAAAAAA }); // Gray base
+  const groundMat = new THREE.MeshLambertMaterial({ color: 0x88aa88 }); // Grass color
   const ground = new THREE.Mesh(groundGeom, groundMat);
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = -0.1; // Slightly below everything else
   scene.add(ground);
-  
-  // Textured overlay for decoration
-  const decorGeom = new THREE.PlaneGeometry(90, 90);
-  const decorMat = new THREE.MeshLambertMaterial({ 
-    color: 0xEEEEEE,
-    transparent: true,
-    opacity: 0.5
-  });
-  const decorGround = new THREE.Mesh(decorGeom, decorMat);
-  decorGround.rotation.x = -Math.PI / 2;
-  decorGround.position.y = -0.05; // Just above the main ground
-  scene.add(decorGround);
 }
 
-// Create path layout
+// Create path layout - narrower paths connecting buildings
 function createPaths() {
-  // Main vertical path
-  const vertPathGeom = new THREE.PlaneGeometry(10, 50);
   const pathMat = new THREE.MeshLambertMaterial({ color: 0xCCCCCC }); // Light gray path
+  
+  // Main vertical path (narrower)
+  const vertPathGeom = new THREE.PlaneGeometry(5, 30);
   const vertPath = new THREE.Mesh(vertPathGeom, pathMat);
   vertPath.rotation.x = -Math.PI / 2;
   vertPath.position.y = 0.01; // Just above ground
   scene.add(vertPath);
   
-  // Horizontal paths connecting to buildings
-  const leftPathGeom = new THREE.PlaneGeometry(15, 5);
-  const leftPath1 = new THREE.Mesh(leftPathGeom, pathMat);
-  leftPath1.rotation.x = -Math.PI / 2;
-  leftPath1.position.set(-7.5, 0.01, 10); // Top left
-  scene.add(leftPath1);
+  // Horizontal paths to buildings (narrower)
+  // Top row
+  const topLeftPathGeom = new THREE.PlaneGeometry(15, 3);
+  const topLeftPath = new THREE.Mesh(topLeftPathGeom, pathMat);
+  topLeftPath.rotation.x = -Math.PI / 2;
+  topLeftPath.position.set(-7.5, 0.01, -10); // To top left building
+  scene.add(topLeftPath);
   
-  const leftPath2 = new THREE.Mesh(leftPathGeom, pathMat);
-  leftPath2.rotation.x = -Math.PI / 2;
-  leftPath2.position.set(-7.5, 0.01, 25); // Bottom left
-  scene.add(leftPath2);
+  const topRightPathGeom = new THREE.PlaneGeometry(15, 3);
+  const topRightPath = new THREE.Mesh(topRightPathGeom, pathMat);
+  topRightPath.rotation.x = -Math.PI / 2;
+  topRightPath.position.set(7.5, 0.01, -10); // To top right building
+  scene.add(topRightPath);
   
-  const rightPathGeom = new THREE.PlaneGeometry(15, 5);
-  const rightPath1 = new THREE.Mesh(rightPathGeom, pathMat);
-  rightPath1.rotation.x = -Math.PI / 2;
-  rightPath1.position.set(7.5, 0.01, 10); // Top right
-  scene.add(rightPath1);
+  // Bottom row
+  const bottomLeftPathGeom = new THREE.PlaneGeometry(15, 3);
+  const bottomLeftPath = new THREE.Mesh(bottomLeftPathGeom, pathMat);
+  bottomLeftPath.rotation.x = -Math.PI / 2;
+  bottomLeftPath.position.set(-7.5, 0.01, 10); // To bottom left building
+  scene.add(bottomLeftPath);
   
-  const rightPath2 = new THREE.Mesh(rightPathGeom, pathMat);
-  rightPath2.rotation.x = -Math.PI / 2;
-  rightPath2.position.set(7.5, 0.01, 25); // Bottom right
-  scene.add(rightPath2);
+  const bottomRightPathGeom = new THREE.PlaneGeometry(15, 3);
+  const bottomRightPath = new THREE.Mesh(bottomRightPathGeom, pathMat);
+  bottomRightPath.rotation.x = -Math.PI / 2;
+  bottomRightPath.position.set(7.5, 0.01, 10); // To bottom right building
+  scene.add(bottomRightPath);
+  
+  // Path to radio tower
+  const radioPathGeom = new THREE.PlaneGeometry(3, 10);
+  const radioPath = new THREE.Mesh(radioPathGeom, pathMat);
+  radioPath.rotation.x = -Math.PI / 2;
+  radioPath.position.set(8.5, 0.01, -5); // Connect to radio tower
+  scene.add(radioPath);
 }
 
-// Create buildings with more detailed shapes
-function createBuilding(x, z, color) {
+// Create interactive areas (stoops) that trigger dialogs
+function createInteractiveArea(x, z, buildingId) {
+  // Dark gray stoop with slight elevation
+  const stoopGeom = new THREE.BoxGeometry(4, 0.2, 4);
+  const stoopMat = new THREE.MeshLambertMaterial({ color: 0x999999 });
+  const stoop = new THREE.Mesh(stoopGeom, stoopMat);
+  stoop.position.set(x, 0.1, z); // Slightly raised
+  stoop.userData = { buildingId: buildingId }; // Store which building/object this stoop belongs to
+  scene.add(stoop);
+  
+  // Add shadow effect
+  const shadowGeom = new THREE.PlaneGeometry(4.4, 4.4);
+  const shadowMat = new THREE.MeshBasicMaterial({ 
+    color: 0x000000, 
+    transparent: true, 
+    opacity: 0.2 
+  });
+  const shadow = new THREE.Mesh(shadowGeom, shadowMat);
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.set(x, 0.05, z);
+  scene.add(shadow);
+  
+  // Add to interactive areas array for proximity checks
+  interactiveAreas.push(stoop);
+}
+
+// Create buildings with different styles based on their type
+function createBuildingByType(type, x, z, color) {
+  switch (type) {
+    case 'mcp':
+      return createMCPShop(x, z, color);
+    case 'apt':
+      return createApartmentBuilding(x, z, color);
+    case 'ai-ide':
+      return createHouseBuilding(x, z, color);
+    case 'gym':
+      return createGymBuilding(x, z, color);
+    default:
+      return createGenericBuilding(x, z, color);
+  }
+}
+
+// Create the MCP shop building (wide storefront with flat roof + angled edges)
+function createMCPShop(x, z, color) {
   const group = new THREE.Group();
   
-  // Main building box
-  const height = 5 + Math.random() * 2; // Slight height variation
-  const geom = new THREE.BoxGeometry(8, height, 8);
-  const mat = new THREE.MeshLambertMaterial({ color });
-  const mainBlock = new THREE.Mesh(geom, mat);
-  mainBlock.position.y = height/2;
+  // Main building box (wider)
+  const buildingGeom = new THREE.BoxGeometry(10, 5, 8);
+  const buildingMat = new THREE.MeshLambertMaterial({ color });
+  const mainBlock = new THREE.Mesh(buildingGeom, buildingMat);
+  mainBlock.position.y = 2.5;
   group.add(mainBlock);
   
-  // Roof
-  const roofGeom = new THREE.BoxGeometry(9, 1, 9);
-  const roofMat = new THREE.MeshLambertMaterial({ color: adjustColor(color, -30) }); // Darker
+  // Roof (mostly flat with angled edges)
+  const roofGroup = new THREE.Group();
+  
+  // Main flat roof
+  const flatRoofGeom = new THREE.BoxGeometry(8, 0.5, 6);
+  const roofMat = new THREE.MeshLambertMaterial({ color: adjustColor(color, -30) });
+  const flatRoof = new THREE.Mesh(flatRoofGeom, roofMat);
+  flatRoof.position.y = 5.25;
+  roofGroup.add(flatRoof);
+  
+  // Angled edges (front and back)
+  const frontEdgeGeom = new THREE.BoxGeometry(10, 1, 1);
+  const frontEdge = new THREE.Mesh(frontEdgeGeom, roofMat);
+  frontEdge.position.set(0, 5, 3.5);
+  frontEdge.rotation.x = Math.PI / 8;
+  roofGroup.add(frontEdge);
+  
+  const backEdgeGeom = new THREE.BoxGeometry(10, 1, 1);
+  const backEdge = new THREE.Mesh(backEdgeGeom, roofMat);
+  backEdge.position.set(0, 5, -3.5);
+  backEdge.rotation.x = -Math.PI / 8;
+  roofGroup.add(backEdge);
+  
+  group.add(roofGroup);
+  
+  // Large storefront windows
+  const windowMat = new THREE.MeshLambertMaterial({ color: 0x88CCFF });
+  
+  // Left window
+  const leftWindowGeom = new THREE.BoxGeometry(3, 2, 0.1);
+  const leftWindow = new THREE.Mesh(leftWindowGeom, windowMat);
+  leftWindow.position.set(-2.5, 3, 4.05);
+  group.add(leftWindow);
+  
+  // Right window
+  const rightWindowGeom = new THREE.BoxGeometry(3, 2, 0.1);
+  const rightWindow = new THREE.Mesh(rightWindowGeom, windowMat);
+  rightWindow.position.set(2.5, 3, 4.05);
+  group.add(rightWindow);
+  
+  // Door (centered)
+  const doorGeom = new THREE.BoxGeometry(2.5, 3.5, 0.2);
+  const doorMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
+  const door = new THREE.Mesh(doorGeom, doorMat);
+  door.position.set(0, 1.75, 4.1);
+  group.add(door);
+  
+  // "MCP" sign above door
+  const signGeom = new THREE.BoxGeometry(5, 1, 0.2);
+  const signMat = new THREE.MeshLambertMaterial({ color: 0xFFDD44 });
+  const sign = new THREE.Mesh(signGeom, signMat);
+  sign.position.set(0, 5.5, 4.2);
+  group.add(sign);
+  
+  // Position the building at the specified coordinates
+  group.position.set(x, 0, z);
+  
+  // All buildings face forward (south)
+  group.rotation.y = Math.PI;
+  
+  scene.add(group);
+  return group;
+}
+
+// Create the apartment building (tall multi-story)
+function createApartmentBuilding(x, z, color) {
+  const group = new THREE.Group();
+  
+  // Main tall building
+  const buildingGeom = new THREE.BoxGeometry(10, 12, 8);
+  const buildingMat = new THREE.MeshLambertMaterial({ color });
+  const mainBlock = new THREE.Mesh(buildingGeom, buildingMat);
+  mainBlock.position.y = 6;
+  group.add(mainBlock);
+  
+  // Flat roof
+  const roofGeom = new THREE.BoxGeometry(11, 0.5, 9);
+  const roofMat = new THREE.MeshLambertMaterial({ color: adjustColor(color, -30) });
   const roof = new THREE.Mesh(roofGeom, roofMat);
-  roof.position.y = height + 0.5;
+  roof.position.y = 12.25;
   group.add(roof);
+  
+  // Windows (4 rows, 2 columns)
+  const windowMat = new THREE.MeshLambertMaterial({ color: 0x88CCFF });
+  
+  for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < 2; col++) {
+      const windowGeom = new THREE.BoxGeometry(2, 1.5, 0.1);
+      const window = new THREE.Mesh(windowGeom, windowMat);
+      window.position.set(-2 + col * 4, 3 + row * 3, 4.05);
+      group.add(window);
+    }
+  }
+  
+  // Door
+  const doorGeom = new THREE.BoxGeometry(2.5, 3.5, 0.2);
+  const doorMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
+  const door = new THREE.Mesh(doorGeom, doorMat);
+  door.position.set(0, 1.75, 4.1);
+  group.add(door);
+  
+  // Position the building at the specified coordinates
+  group.position.set(x, 0, z);
+  
+  // All buildings face forward (south)
+  group.rotation.y = Math.PI;
+  
+  scene.add(group);
+  return group;
+}
+
+// Create the AI IDE house building
+function createHouseBuilding(x, z, color) {
+  const group = new THREE.Group();
+  
+  // Main house building
+  const buildingGeom = new THREE.BoxGeometry(9, 5, 8);
+  const buildingMat = new THREE.MeshLambertMaterial({ color });
+  const mainBlock = new THREE.Mesh(buildingGeom, buildingMat);
+  mainBlock.position.y = 2.5;
+  group.add(mainBlock);
+  
+  // Pitched roof (triangular)
+  const roofGeometry = new THREE.ConeGeometry(6, 4, 4);
+  const roofMat = new THREE.MeshLambertMaterial({ color: adjustColor(color, -40) });
+  const roof = new THREE.Mesh(roofGeometry, roofMat);
+  roof.rotation.y = Math.PI / 4; // Rotate to get the right orientation
+  roof.position.y = 7; // Position on top of the building
+  group.add(roof);
+  
+  // Windows (2 on front, symmetrical)
+  const windowMat = new THREE.MeshLambertMaterial({ color: 0x88CCFF });
+  
+  // Left window
+  const leftWindowGeom = new THREE.BoxGeometry(2, 2, 0.1);
+  const leftWindow = new THREE.Mesh(leftWindowGeom, windowMat);
+  leftWindow.position.set(-2.5, 3, 4.05);
+  group.add(leftWindow);
+  
+  // Right window
+  const rightWindowGeom = new THREE.BoxGeometry(2, 2, 0.1);
+  const rightWindow = new THREE.Mesh(rightWindowGeom, windowMat);
+  rightWindow.position.set(2.5, 3, 4.05);
+  group.add(rightWindow);
   
   // Door
   const doorGeom = new THREE.BoxGeometry(2, 3, 0.2);
-  const doorMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
+  const doorMat = new THREE.MeshLambertMaterial({ color: 0x8B4513 }); // Brown wooden door
   const door = new THREE.Mesh(doorGeom, doorMat);
-  door.position.set(0, 1.5, 4.1); // Front of building
+  door.position.set(0, 1.5, 4.1);
   group.add(door);
   
-  // Windows (2 on front)
-  const windowGeom = new THREE.BoxGeometry(1.5, 1.5, 0.1);
-  const windowMat = new THREE.MeshLambertMaterial({ color: 0x88CCFF });
+  // Mailbox with "AI IDE" sign
+  const mailboxGeom = new THREE.BoxGeometry(1, 1, 0.8);
+  const mailboxMat = new THREE.MeshLambertMaterial({ color: 0x3366AA });
+  const mailbox = new THREE.Mesh(mailboxGeom, mailboxMat);
+  mailbox.position.set(-3.5, 1, 3.5);
+  group.add(mailbox);
   
-  const window1 = new THREE.Mesh(windowGeom, windowMat);
-  window1.position.set(-2, height/2 + 1, 4.1);
-  group.add(window1);
+  // Sign on mailbox
+  const signGeom = new THREE.BoxGeometry(1, 0.5, 0.1);
+  const signMat = new THREE.MeshLambertMaterial({ color: 0xFFFFFF });
+  const sign = new THREE.Mesh(signGeom, signMat);
+  sign.position.set(-3.5, 1.6, 3.5);
+  group.add(sign);
   
-  const window2 = new THREE.Mesh(windowGeom, windowMat);
-  window2.position.set(2, height/2 + 1, 4.1);
-  group.add(window2);
-  
-  // Position the whole building
+  // Position the building at the specified coordinates
   group.position.set(x, 0, z);
   
-  // Rotate to face the path
-  if (x < 0) {
-    group.rotation.y = Math.PI/2; // Left side buildings
-  } else {
-    group.rotation.y = -Math.PI/2; // Right side buildings
+  // All buildings face forward (south)
+  group.rotation.y = Math.PI;
+  
+  scene.add(group);
+  return group;
+}
+
+// Create the gym building (long with tall windows)
+function createGymBuilding(x, z, color) {
+  const group = new THREE.Group();
+  
+  // Main building (wider than tall)
+  const buildingGeom = new THREE.BoxGeometry(15, 6, 8);
+  const buildingMat = new THREE.MeshLambertMaterial({ color });
+  const mainBlock = new THREE.Mesh(buildingGeom, buildingMat);
+  mainBlock.position.y = 3;
+  group.add(mainBlock);
+  
+  // Flat roof
+  const roofGeom = new THREE.BoxGeometry(15.5, 0.5, 8.5);
+  const roofMat = new THREE.MeshLambertMaterial({ color: adjustColor(color, -30) });
+  const roof = new THREE.Mesh(roofGeom, roofMat);
+  roof.position.y = 6.25;
+  group.add(roof);
+  
+  // Windows (tall windows typical of a gym)
+  const windowMat = new THREE.MeshLambertMaterial({ color: 0x88CCFF });
+  
+  // 4 tall windows across the front
+  for (let i = 0; i < 4; i++) {
+    const windowGeom = new THREE.BoxGeometry(2, 4, 0.1);
+    const window = new THREE.Mesh(windowGeom, windowMat);
+    window.position.set(-6 + i * 4, 3, 4.05);
+    group.add(window);
   }
+  
+  // Double doors in center
+  const doorGeom = new THREE.BoxGeometry(3, 4, 0.2);
+  const doorMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
+  const door = new THREE.Mesh(doorGeom, doorMat);
+  door.position.set(0, 2, 4.1);
+  group.add(door);
+  
+  // "$CLAUD$" sign on roof
+  const signGeom = new THREE.BoxGeometry(8, 1, 0.2);
+  const signMat = new THREE.MeshLambertMaterial({ color: 0xFFDD44 });
+  const sign = new THREE.Mesh(signGeom, signMat);
+  sign.position.set(0, 6.6, 0);
+  group.add(sign);
+  
+  // Position the building at the specified coordinates
+  group.position.set(x, 0, z);
+  
+  // All buildings face forward (south)
+  group.rotation.y = Math.PI;
   
   scene.add(group);
   return group;
@@ -226,34 +504,34 @@ function createRadioTower() {
   const group = new THREE.Group();
   
   // Base
-  const baseGeom = new THREE.BoxGeometry(4, 1, 4);
+  const baseGeom = new THREE.CylinderGeometry(2, 2, 1, 16);
   const baseMat = new THREE.MeshLambertMaterial({ color: 0x888888 });
   const base = new THREE.Mesh(baseGeom, baseMat);
   base.position.y = 0.5;
   group.add(base);
   
-  // Tower structure
-  const towerGeom = new THREE.BoxGeometry(2, 8, 2);
+  // Tower structure - thinner at top
+  const towerGeom = new THREE.CylinderGeometry(1, 1.5, 12, 16);
   const towerMat = new THREE.MeshLambertMaterial({ color: 0x666666 });
   const towerBase = new THREE.Mesh(towerGeom, towerMat);
-  towerBase.position.y = 5;
+  towerBase.position.y = 7;
   group.add(towerBase);
   
   // Antenna
   const antennaGeom = new THREE.CylinderGeometry(0.1, 0.1, 5, 8);
   const antennaMat = new THREE.MeshLambertMaterial({ color: 0x444444 });
   const antenna = new THREE.Mesh(antennaGeom, antennaMat);
-  antenna.position.y = 11.5;
+  antenna.position.y = 15.5;
   group.add(antenna);
   
   // Ball on top
   const ballGeom = new THREE.SphereGeometry(0.5, 16, 16);
   const ballMat = new THREE.MeshLambertMaterial({ color: 0xffff00 });
   const ball = new THREE.Mesh(ballGeom, ballMat);
-  ball.position.y = 14;
+  ball.position.y = 18;
   group.add(ball);
   
-  // Position tower to the right of the path at the top
+  // Position tower
   group.position.set(10, 0, -10);
   scene.add(group);
   tower = group;
@@ -446,20 +724,25 @@ function updateBackgroundLayers(deltaX, deltaZ) {
 
 // Check proximity to interactive elements
 function checkProximity() {
-  // Check proximity to each building
-  buildings.forEach(bldg => {
-    const dist = bldg.position.distanceTo(playerMesh.position);
-    if (dist < 6) {
-      // Show building info from building.userData
-      showBuildingInfo(bldg.userData.title, bldg.userData.body);
+  // Check proximity to interactive areas (stoops)
+  interactiveAreas.forEach(area => {
+    const dist = area.position.distanceTo(playerMesh.position);
+    if (dist < 3) {
+      // Determine which building or object this area belongs to
+      const buildingId = area.userData.buildingId;
+      
+      if (buildingId === 'radio') {
+        // Radio tower interaction
+        showPopup('towerInfo');
+      } else {
+        // Building interaction - find the matching building
+        const building = buildings.find(b => b.userData.id === buildingId);
+        if (building) {
+          showBuildingInfo(building.userData.title, building.userData.body);
+        }
+      }
     }
   });
-
-  // Check proximity to tower
-  const towerDist = tower.position.distanceTo(playerMesh.position);
-  if (towerDist < 6) {
-    showPopup('towerInfo');
-  }
 }
 
 // Update camera position to follow player

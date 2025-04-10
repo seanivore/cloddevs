@@ -1,70 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clôd Cluster | Community-Owned Developer Protocol</title>
-  <meta name="description" content="Modern developer community where gamification elevates viral content, not marketing.">
-  <link rel="stylesheet" href="styles.css">
-  <!-- Preload pixel fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>Clôd Cluster - Pixel Town</title>
+  <meta name="description" content="Explore the Clôd Cluster community in our interactive pixel town">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
 <body>
-  <div id="app-container">
-    <!-- Layered backgrounds as described in BRANDING_PHILOSOPHY.md -->
-    <div id="lower-layer-texture" class="layer"></div>
-    <div id="lower-layer-color" class="layer"></div>
-    <div id="lower-layer-art" class="layer"></div>
-    
-    <!-- Three.js Canvas -->
-    <canvas id="sceneCanvas" class="layer"></canvas>
-    
-    <!-- Layered UI overlays -->
-    <div id="top-layer-ui" class="layer"></div>
-    <div id="character-sprite" class="layer"></div>
-    
-    <!-- UI Dialog Elements -->
-    <div id="ui-elements-dialogue" class="layer">
-      <!-- Welcome Message -->
-      <div class="dialog-box" id="welcomeMessage">
-        <div class="dialog-inner">
-          <p>Welcome to $CLAUD Protocol town! Use arrow keys to move and space to interact with buildings.</p>
-        </div>
-        <div class="dialog-arrow"></div>
+  <!-- Game canvas layers -->
+  <canvas id="ground-layer"></canvas>
+  
+  <!-- HTML layers for additional elements -->
+  <div id="lower-layer-art" class="game-layer"></div>
+  <div id="character-layer" class="game-layer">
+    <img id="character-sprite" src="assets/img/character-sprite.png" alt="Player character">
+    <div id="interactiveHighlight"></div>
+  </div>
+  <div id="ui-layer" class="game-layer">
+    <button id="toggleRadioBtn" aria-label="Toggle Radio">📻</button>
+  </div>
+  
+  <!-- Dialog boxes layer -->
+  <div id="dialog-layer" class="game-layer">
+    <!-- Welcome message dialog -->
+    <div id="welcomeMessage" class="dialog-box">
+      <h2 class="dialog-title">Welcome to Clôd Cluster Town!</h2>
+      <div class="dialog-content">
+        <p>Explore our interactive community map. Use the WASD or arrow keys to move around and press SPACE to interact with buildings and areas.</p>
+        <p>Each building represents a different part of our project. Have fun exploring!</p>
       </div>
-
-      <!-- Building Info Popup -->
-      <div class="dialog-box" id="genericBuildingPopup">
-        <div class="dialog-inner">
-          <h2 id="popupTitle">Building Title</h2>
-          <p id="popupBody">Building text goes here...</p>
-          <div class="dialog-btn-container">
-            <button class="dialog-btn" onclick="hidePopup('genericBuildingPopup')">Close</button>
-          </div>
-        </div>
+      <button class="dialog-button" id="welcomeCloseBtn">Let's Explore!</button>
+    </div>
+    
+    <!-- Generic building info popup -->
+    <div id="genericBuildingPopup" class="dialog-box">
+      <h2 class="dialog-title" id="buildingTitle">Building Name</h2>
+      <div class="dialog-content" id="buildingDescription">
+        Building description will appear here.
       </div>
-
-      <!-- Radio Tower Popup -->
-      <div class="dialog-box" id="towerInfo">
-        <div class="dialog-inner">
-          <h2>Radio Tower Active</h2>
-          <p>Listening to the "Deep Dive" podcast audio.</p>
-          <div id="transcriptText"></div>
-          <div class="dialog-btn-container">
-            <button class="dialog-btn" onclick="hidePopup('towerInfo')">Close</button>
-          </div>
-        </div>
+      <button class="dialog-button" id="buildingCloseBtn">Close</button>
+    </div>
+    
+    <!-- Tower radio station info -->
+    <div id="towerInfo" class="dialog-box">
+      <h2 class="dialog-title">Community Radio Tower</h2>
+      <div class="dialog-content">
+        <p>Welcome to the Clôd Cluster Community Radio! This is where we broadcast updates, tutorials, and community highlights.</p>
+        <p>Tune in to learn about our latest developments and how you can contribute to the project.</p>
       </div>
-
-      <!-- Radio Toggle Button -->
-      <div class="pixel-button" id="radioToggle">Radio: OFF</div>
+      <button class="dialog-button" id="towerCloseBtn">Close</button>
     </div>
   </div>
-  <audio id="radioAudio" src="./assets/audio/deep_dive_podcast.mp3" preload="auto"></audio>
-  <!-- Add Three.js library before main.js -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
   <script src="assets/js/main.js"></script>
 </body>
 </html>

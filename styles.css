@@ -6,6 +6,7 @@ html, body {
   font-family: 'Press Start 2P', 'VT323', monospace; /* Pixel fonts */
   background: #ccc; /* fallback background */
   font-size: 16px;
+  image-rendering: pixelated; /* Ensure pixel art look throughout */
 }
 
 /* Container for all layers */
@@ -139,6 +140,12 @@ html, body {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-top: 10px solid #000;
+  animation: bounce 0.8s infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(5px); }
 }
 
 /* Dialog button container to align right */
@@ -196,6 +203,81 @@ html, body {
   background-color: #efefef;
 }
 
+/* Enhanced Pixel flower for decorative elements */
+.pixel-flower {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background-color: #ff99aa;
+  border-radius: 50%;
+  transform-origin: center bottom;
+  animation: flowerBob 2s infinite ease-in-out;
+  z-index: 10; /* Make sure flowers appear above ground */
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3)); /* Add subtle shadow */
+}
+
+.pixel-flower:before {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 11px;
+  width: 2px;
+  height: 16px;
+  background-color: #00aa00;
+}
+
+/* Add pixel-perfect leaves to the flowers */
+.pixel-flower:after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 7px;
+  width: 10px;
+  height: 6px;
+  background-color: #00aa00;
+  clip-path: polygon(0% 100%, 50% 0%, 100% 100%);
+}
+
+/* Interactive area (stoop) highlight effect */
+.interactive-highlight {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 8px rgba(255, 255, 100, 0.6);
+  border-radius: 2px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}
+
+/* Show the highlight when player is near an interactive area */
+.interactive-highlight.active {
+  opacity: 1;
+}
+
+/* Different bobbing animations for flowers to create natural variation */
+.pixel-flower:nth-child(even) {
+  animation-duration: 2.5s;
+  animation-delay: 0.5s;
+}
+
+.pixel-flower:nth-child(3n) {
+  animation-duration: 1.8s;
+  animation-delay: 0.3s;
+}
+
+.pixel-flower:nth-child(5n) {
+  animation-duration: 2.2s;
+  animation-delay: 0.7s;
+}
+
+@keyframes flowerBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(3deg); }
+}
+
 /* Mobile controls (optional, can be implemented later) */
 .mobile-controls {
   display: none; /* Hidden by default, show on mobile */
@@ -203,32 +285,6 @@ html, body {
   bottom: 20px;
   right: 20px;
   z-index: 10;
-}
-
-/* Pixel flower for decorative elements */
-.pixel-flower {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: #ff99aa;
-  border-radius: 50%;
-  transform-origin: center bottom;
-  animation: flowerBob 2s infinite ease-in-out;
-}
-
-.pixel-flower:before {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 9px;
-  width: 2px;
-  height: 10px;
-  background-color: #00aa00;
-}
-
-@keyframes flowerBob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
 }
 
 /* Media query for mobile devices */
@@ -254,6 +310,10 @@ html, body {
   }
   
   .pixel-flower {
+    animation: none;
+  }
+  
+  .dialog-arrow {
     animation: none;
   }
 }
