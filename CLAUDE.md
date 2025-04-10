@@ -1,5 +1,13 @@
 # Read Me for Claude
 
+## To Preview 
+
+```bash
+cd /Users/seanivore/Development/cloddevs
+npx serve
+```
+Then visit http://localhost:5000 in your browser.
+
 ## Directory Structure
 
 cloddevs/
