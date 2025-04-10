@@ -29,11 +29,7 @@
 │   │   ├── 3_SOUND_BITES.md
 │   │   ├── 4_MEDIUM_LENGTH_BREAKDOWN.md
 │   │   ├── 5_FRESH_TILE-DRAFTS.md
-│   │   ├── art-scene
-│   │   │   ├── CLAUD_PROTOCOL.ai
-│   │   │   ├── CLAUD_PROTOCOL.png
-│   │   │   ├── ground-texture.ai
-│   │   │   └── scene-artboard.ai
+│   │   ├── art-scene `art files for Sean to make edits to SVGs`
 │   │   ├── BUILDING_CHARACTER.md
 │   │   ├── homepage-prototypes
 │   │   │   ├── 1-pokemon-prototype-muted.html
@@ -45,12 +41,6 @@
 │   │   │   ├── 2_SCRIPT_VO_EDITS.md
 │   │   │   └── 2_TXT_VERSION_FOR_RECORDING.txt
 │   │   └── static-draft-example.png
-│   ├── fonts
-│   │   ├── Andale Mono.ttf
-│   │   ├── font-test.html
-│   │   ├── PTMono.ttc
-│   │   ├── SFNSMono.ttf
-│   │   └── SFNSMonoItalic.ttf
 │   ├── js
 │   │   └── main.js
 │   ├── svg
@@ -69,6 +59,7 @@
 │   └── transcript
 │       ├── CLAUD_PROTOCOL_NOTEBOOK_LM.json
 │       └── CLAUD_PROTOCOL_NOTEBOOK_LM.txt
+├── CLAUDE.md
 ├── index.html
 ├── LICENSE
 └── styles.css
