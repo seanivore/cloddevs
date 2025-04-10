@@ -31,27 +31,23 @@ function init() {
   const canvas = document.getElementById('sceneCanvas');
   renderer = new THREE.WebGLRenderer({ 
     canvas, 
-    alpha: config.rendererDefault.alpha, 
-    antialias: config.rendererDefault.antialias 
+    alpha: true, 
+    antialias: true
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(config.rendererDefault.clearColor, config.rendererDefault.clearAlpha);
+  renderer.setClearColor(0xDDDDDD, 0);
 
   scene = new THREE.Scene();
 
   // Isometric-like camera
   const aspect = window.innerWidth / window.innerHeight;
   camera = new THREE.PerspectiveCamera(
-    config.cameraDefault.fov, 
+    45, 
     aspect, 
-    config.cameraDefault.nearPlane, 
-    config.cameraDefault.farPlane
+    0.1, 
+    1000
   );
-  camera.position.set(
-    config.cameraDefault.position.x, 
-    config.cameraDefault.position.y, 
-    config.cameraDefault.position.z
-  );
+  camera.position.set(0, 40, 40);
   camera.lookAt(new THREE.Vector3(0, 0, 0));
 
   // Basic directional light

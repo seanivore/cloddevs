@@ -7,11 +7,23 @@ const keyboard = {};
 // Initialize player state and control
 export function initPlayer() {
   // Set up initial player state
-  const player = { ...config.playerDefault };
+  const player = { 
+    x: config.character.startPosition.x, 
+    y: config.character.startPosition.y,
+    width: config.character.frameWidth,
+    height: config.character.frameHeight,
+    direction: 'down',
+    isMoving: false,
+    frame: 0
+  };
   
   // Set up player sprite
-  const playerSprite = { 
-    ...config.playerSpriteConfig,
+  const playerSprite = {
+    frameWidth: config.character.frameWidth,
+    frameHeight: config.character.frameHeight,
+    totalFrames: config.character.animationFrames,
+    frameDelay: 8, // Controls animation speed
+    directions: ['down', 'left', 'right', 'up'],
     currentFrame: 0,
     frameCounter: 0
   };
@@ -44,31 +56,34 @@ export function handlePlayerMovement(playerState, deltaTime = 1) {
   const originalY = playerState.y;
   let moved = false;
   
+  const MOVEMENT_SPEED = 3; // hardcoded for now
+  
   // Check for movement keys (WASD and arrow keys)
   if (keyboard['w'] || keyboard['ArrowUp']) {
-    playerState.y -= config.MOVEMENT_SPEED * deltaTime;
+    playerState.y -= MOVEMENT_SPEED * deltaTime;
     playerState.direction = 'up';
     moved = true;
   }
   if (keyboard['s'] || keyboard['ArrowDown']) {
-    playerState.y += config.MOVEMENT_SPEED * deltaTime;
+    playerState.y += MOVEMENT_SPEED * deltaTime;
     playerState.direction = 'down';
     moved = true;
   }
   if (keyboard['a'] || keyboard['ArrowLeft']) {
-    playerState.x -= config.MOVEMENT_SPEED * deltaTime;
+    playerState.x -= MOVEMENT_SPEED * deltaTime;
     playerState.direction = 'left';
     moved = true;
   }
   if (keyboard['d'] || keyboard['ArrowRight']) {
-    playerState.x += config.MOVEMENT_SPEED * deltaTime;
+    playerState.x += MOVEMENT_SPEED * deltaTime;
     playerState.direction = 'right';
     moved = true;
   }
   
   // Keep player within bounds
-  playerState.x = Math.max(0, Math.min(config.WORLD_SIZE - playerState.width, playerState.x));
-  playerState.y = Math.max(0, Math.min(config.WORLD_SIZE - playerState.height, playerState.y));
+  const WORLD_SIZE = config.map.width; // Using map width as world size
+  playerState.x = Math.max(0, Math.min(WORLD_SIZE - playerState.width, playerState.x));
+  playerState.y = Math.max(0, Math.min(WORLD_SIZE - playerState.height, playerState.y));
   
   // Update player state
   playerState.isMoving = moved;
