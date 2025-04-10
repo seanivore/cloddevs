@@ -1,7 +1,15 @@
 {
-    "folders": [
-        {
-            "path": ".."
-        }
-    ]
+	"folders": [
+		{
+			"path": "/Users/seanivore/Development/_resources/ai-dev-docs"
+		},
+		{
+			"path": ".."
+		}
+	],
+    "extensions": {
+        "recommendations": [
+            "juanblanco.solidity"
+        ]
+    }
 }

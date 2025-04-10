@@ -2,7 +2,7 @@
 ----
 
 ## Metadata 
-Meta-title: Clôd Cluster | Community-Owned AI Developer Ecosystem
+Meta-title: CLAUD Cluster | Community-Owned AI Developer Ecosystem
 Meta-summary: Community-owned platform that rewards developers for sharing knowledge. Tokenized design validates & curates the best tools & educational resources, not marketing.
 Meta-thumbnail (1200px x 630px): 
 
