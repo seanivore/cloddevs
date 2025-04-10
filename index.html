@@ -2,27 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>CLAUD Protocol Landing Experience</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clôd Cluster | Community-Owned Developer Protocol</title>
+  <meta name="description" content="Modern developer community where gamification elevates viral content, not marketing.">
   <link rel="stylesheet" href="styles.css">
+  <!-- Preload pixel fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app-container">
-    <canvas id="sceneCanvas"></canvas>
-    <div id="uiLayer">
-      <div class="popup" id="genericBuildingPopup">
-        <h2 id="popupTitle">Building Title</h2>
-        <p id="popupBody">Building text goes here...</p>
-        <button class="close-btn" onclick="hidePopup('genericBuildingPopup')">Close</button>
+    <!-- Layered backgrounds as described in BRANDING_PHILOSOPHY.md -->
+    <div id="lower-layer-texture" class="layer"></div>
+    <div id="lower-layer-color" class="layer"></div>
+    <div id="lower-layer-art" class="layer"></div>
+    
+    <!-- Three.js Canvas -->
+    <canvas id="sceneCanvas" class="layer"></canvas>
+    
+    <!-- Layered UI overlays -->
+    <div id="top-layer-ui" class="layer"></div>
+    <div id="character-sprite" class="layer"></div>
+    
+    <!-- UI Dialog Elements -->
+    <div id="ui-elements-dialogue" class="layer">
+      <!-- Welcome Message -->
+      <div class="dialog-box" id="welcomeMessage">
+        <div class="dialog-inner">
+          <p>Welcome to $CLAUD Protocol town! Use arrow keys to move and space to interact with buildings.</p>
+        </div>
+        <div class="dialog-arrow"></div>
       </div>
-      <div class="popup" id="towerInfo">
-        <h2>Radio Tower Active</h2>
-        <p>Listening to the "Deep Dive" podcast audio. Feel free to integrate sub-titles or transcripts here!</p>
-        <button class="close-btn" onclick="hidePopup('towerInfo')">Close</button>
+
+      <!-- Building Info Popup -->
+      <div class="dialog-box" id="genericBuildingPopup">
+        <div class="dialog-inner">
+          <h2 id="popupTitle">Building Title</h2>
+          <p id="popupBody">Building text goes here...</p>
+          <div class="dialog-btn-container">
+            <button class="dialog-btn" onclick="hidePopup('genericBuildingPopup')">Close</button>
+          </div>
+        </div>
       </div>
-      <div class="radio-toggle" id="radioToggle">Toggle Radio</div>
+
+      <!-- Radio Tower Popup -->
+      <div class="dialog-box" id="towerInfo">
+        <div class="dialog-inner">
+          <h2>Radio Tower Active</h2>
+          <p>Listening to the "Deep Dive" podcast audio.</p>
+          <div id="transcriptText"></div>
+          <div class="dialog-btn-container">
+            <button class="dialog-btn" onclick="hidePopup('towerInfo')">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Radio Toggle Button -->
+      <div class="pixel-button" id="radioToggle">Radio: OFF</div>
     </div>
   </div>
   <audio id="radioAudio" src="./assets/audio/deep_dive_podcast.mp3" preload="auto"></audio>
+  <!-- Add Three.js library before main.js -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
   <script src="assets/js/main.js"></script>
 </body>

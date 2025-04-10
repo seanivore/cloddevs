@@ -3,72 +3,257 @@ html, body {
   margin: 0; padding: 0;
   width: 100%; height: 100%;
   overflow: hidden;
-  font-family: sans-serif;
+  font-family: 'Press Start 2P', 'VT323', monospace; /* Pixel fonts */
   background: #ccc; /* fallback background */
+  font-size: 16px;
 }
 
-/* (Optional) container for any 2D layered elements, or put them outside this wrapper  */
+/* Container for all layers */
 #app-container {
   position: relative;
   width: 100vw; 
   height: 100vh;
+  overflow: hidden;
 }
 
-/* Three.js canvas layer */
-canvas {
-  display: block;
+/* Layer positioning - Based on BRANDING_PHILOSOPHY.md */
+.layer {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; 
-  height: 100%;
-  z-index: 0; /* you can raise or lower if you add more layers */
-}
-
-/* Simple UI overlay for text or modals */
-#uiLayer {
-  position: absolute;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* let clicks pass to the canvas if needed */
-  z-index: 1; /* above the canvas but below other potential layers */
+  pointer-events: none;
 }
 
-/* Proximity pop-up for buildings, radio tower, etc. */
-.popup {
+/* Z-index layering as described in BRANDING_PHILOSOPHY.md */
+#lower-layer-texture { 
+  z-index: 0; 
+  width: 120%;
+  height: 120%;
+  background-color: rgba(136, 170, 136, 0.5); /* Light green texture */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect width="10" height="10" fill="%23789678" /><rect x="10" y="10" width="10" height="10" fill="%23789678" /></svg>');
+  background-repeat: repeat;
+  transform: translate(-10%, -10%); /* Initial offset */
+  will-change: transform; /* Optimize for animation */
+}
+
+#lower-layer-color { 
+  z-index: 1; 
+  background-color: rgba(170, 204, 170, 0.3); /* Transparent grass color */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23aaeeaa" fill-opacity="0.2" /></svg>');
+}
+
+#lower-layer-art { 
+  z-index: 2; 
+  height: 105%;
+  /* Will contain bouncing flowers via JS animation */
+}
+
+#sceneCanvas { 
+  z-index: 3; 
+  display: block;
+  image-rendering: pixelated; /* Ensure pixel art look */
+}
+
+#top-layer-ui { 
+  z-index: 4; 
+  /* Will contain UI elements that stick to buildings */
+}
+
+#character-sprite { 
+  z-index: 5; 
+  /* Will contain the character sprite */
+}
+
+#ui-elements-dialogue { 
+  z-index: 6; 
+  pointer-events: auto; /* Allow interactions with UI */
+}
+
+/* Pokemon-style dialog box */
+.dialog-box {
   display: none; /* shown via JS when triggered */
-  position: absolute; 
-  top: 20%; left: 10%;
-  width: 80%; 
-  min-height: 30%;
-  background: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  pointer-events: auto;
+  
+  /* Pokemon-style positioning */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  max-width: 800px;
+  
+  /* Dialog box styling */
+  border: 4px solid #000;
+  border-radius: 0; /* Hard pixel edges */
+  background-color: #fff;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 6px #000;
+  image-rendering: pixelated;
+  overflow: visible; /* Allow for the arrow */
+  padding: 3px; /* Space for inner container */
+}
+
+/* Welcome message at top */
+#welcomeMessage {
+  top: 10%;
+}
+
+/* Building info in middle */
+#genericBuildingPopup, #towerInfo {
+  top: 30%;
+}
+
+/* Inner dialog content */
+.dialog-inner {
+  background-color: #fff;
+  border: 2px solid #000;
+  padding: 16px;
+  position: relative;
+}
+
+/* Dialog box text styling */
+.dialog-box h2 {
+  margin: 0 0 16px 0;
+  padding: 0;
+  font-size: 1em;
+  color: #000;
+  text-transform: uppercase;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.dialog-box p {
+  margin: 0 0 16px 0;
+  font-size: 0.9em;
+  line-height: 1.5;
+  color: #000;
+  white-space: pre-line; /* Preserve line breaks in text */
+}
+
+/* Dialog continue arrow */
+.dialog-arrow {
+  position: absolute;
+  bottom: -10px;
+  right: 30px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #000;
+}
+
+/* Dialog button container to align right */
+.dialog-btn-container {
+  text-align: right;
+  margin-top: 8px;
+}
+
+/* Button styling for dialog boxes */
+.dialog-btn {
+  background-color: #000;
   color: #fff;
-  padding: 20px;
-  pointer-events: auto; /* let user click closed */
-  overflow-y: auto;
-}
-.popup h2 {
-  margin-top: 0;
-}
-
-/* Simple close button */
-.close-btn {
-  border: none; 
-  background: #777; 
-  color: #fff; 
-  padding: 8px 12px; 
+  border: 2px solid #fff;
+  outline: 2px solid #000;
+  padding: 8px 12px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7em;
   cursor: pointer;
-  margin-top: 10px;
+  text-transform: uppercase;
 }
 
-/* “Radio tower” toggle */
-.radio-toggle {
+.dialog-btn:hover {
+  background-color: #444;
+}
+
+/* "Radio tower" toggle button */
+.pixel-button {
   position: absolute;
   bottom: 20px; 
   left: 20px;
   pointer-events: auto; 
-  background: #fff; 
+  background: #000; 
+  color: #fff;
   padding: 8px 12px; 
   cursor: pointer;
-  border-radius: 4px;
+  border: 2px solid #fff;
+  outline: 2px solid #000;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7em;
+  text-transform: uppercase;
+}
+
+.pixel-button:hover {
+  background: #444;
+}
+
+/* Transcript text for radio tower */
+#transcriptText {
+  margin-top: 8px;
+  font-size: 0.8em;
+  max-height: 100px;
+  overflow-y: auto;
+  border: 2px solid #000;
+  padding: 8px;
+  background-color: #efefef;
+}
+
+/* Mobile controls (optional, can be implemented later) */
+.mobile-controls {
+  display: none; /* Hidden by default, show on mobile */
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+/* Pixel flower for decorative elements */
+.pixel-flower {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #ff99aa;
+  border-radius: 50%;
+  transform-origin: center bottom;
+  animation: flowerBob 2s infinite ease-in-out;
+}
+
+.pixel-flower:before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 9px;
+  width: 2px;
+  height: 10px;
+  background-color: #00aa00;
+}
+
+@keyframes flowerBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .mobile-controls {
+    display: flex;
+  }
+  
+  .dialog-box {
+    width: 90%;
+    top: 15%;
+  }
+  
+  .dialog-box p, .dialog-box h2 {
+    font-size: 0.8em;
+  }
+}
+
+/* For accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .pixel-button, .dialog-btn {
+    transition: none;
+  }
+  
+  .pixel-flower {
+    animation: none;
+  }
 }
