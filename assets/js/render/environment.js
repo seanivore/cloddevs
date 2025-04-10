@@ -46,46 +46,62 @@ export function createPaths(scene) {
   return paths;
 }
 
-// Create interactive areas (stoops) that trigger dialogs
-export function createInteractiveArea(scene, x, z, buildingId) {
-  // Dark gray stoop with slight elevation
-  const stoopGeom = new THREE.BoxGeometry(4, 0.2, 4);
-  const stoopMat = new THREE.MeshLambertMaterial({ color: 0x999999 }); // Dark gray
-  const stoop = new THREE.Mesh(stoopGeom, stoopMat);
-  stoop.position.set(x, 0.1, z); // Slightly raised
-  stoop.userData = { 
-    buildingId: buildingId,
-    isInteractive: true, 
+// Create an interactive area (invisible mesh for collision detection)
+export function createInteractiveArea(scene, camera, x, z, options = {}) {
+  const { id, width = 10, depth = 5, class: className = 'interactive-area' } = options;
+  
+  // Create a geometry for the stoop
+  const geometry = new THREE.BoxGeometry(width, 1, depth);
+  const material = new THREE.MeshBasicMaterial({ 
+    color: 0xff0000,
+    transparent: true,
+    opacity: 0.0  // Invisible
+  });
+  
+  // Create the mesh and position it
+  const stoop = new THREE.Mesh(geometry, material);
+  stoop.position.set(x, -0.4, z);  // Slightly below ground level
+  
+  // Tag it with metadata
+  stoop.userData = {
+    id: id,
+    isInteractive: true,
     class: 'interactive-stoop'
-  }; // Store which building/object this stoop belongs to
+  };
+  
+  // Add to scene
   scene.add(stoop);
   
-  // Add shadow effect
-  const shadowGeom = new THREE.PlaneGeometry(4.4, 4.4);
-  const shadowMat = new THREE.MeshBasicMaterial({ 
-    color: 0x000000, 
-    transparent: true, 
-    opacity: 0.2
-  });
-  const shadow = new THREE.Mesh(shadowGeom, shadowMat);
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.set(x, 0.05, z);
-  scene.add(shadow);
-  
-  // After the scene is rendered, create an HTML element for this stoop
+  // Create an HTML element for this interactive area
   setTimeout(() => {
-    const interactiveArea = document.createElement('div');
-    interactiveArea.className = 'interactive-stoop';
-    interactiveArea.dataset.buildingId = buildingId;
-    interactiveArea.style.position = 'absolute';
-    interactiveArea.style.width = '4rem';
-    interactiveArea.style.height = '4rem';
-    interactiveArea.style.pointerEvents = 'none';
-    interactiveArea.style.opacity = '0.01';
+    const uiLayer = document.getElementById('ui-layer');
     
-    // Position will be updated in the render loop
-    document.getElementById('ui-layer').appendChild(interactiveArea);
-  }, 1000);
+    if (uiLayer) {
+      const interactiveElement = document.createElement('div');
+      interactiveElement.className = `${className} interactive-area-glow`;
+      interactiveElement.setAttribute('data-buildingId', id);
+      
+      // Position the element based on the 3D position
+      const position = new THREE.Vector3(x, 0, z);
+      const vector = position.project(camera);
+      
+      // Convert the normalized device coordinates to CSS pixels
+      const widthHalf = window.innerWidth / 2;
+      const heightHalf = window.innerHeight / 2;
+      const posX = (vector.x * widthHalf) + widthHalf;
+      const posY = -(vector.y * heightHalf) + heightHalf;
+      
+      interactiveElement.style.position = 'absolute';
+      interactiveElement.style.left = `${posX}px`;
+      interactiveElement.style.top = `${posY}px`;
+      interactiveElement.style.width = '30px';
+      interactiveElement.style.height = '30px';
+      interactiveElement.style.borderRadius = '50%';
+      interactiveElement.style.zIndex = '1';
+      
+      uiLayer.appendChild(interactiveElement);
+    }
+  }, 1000); // Add after scene is rendered
   
   return stoop;
 }

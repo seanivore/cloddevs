@@ -320,53 +320,66 @@ html, body {
 
 /* Keypad container */
 .keypad-container {
-  position: absolute;
+  position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
+  z-index: 1000;
   opacity: 0.8;
   pointer-events: auto;
-  z-index: 100;
 }
 
 .keypad-container img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
 }
 
 /* Keys instruction */
 .keys-instruction {
-  position: absolute;
-  bottom: 150px;
+  position: fixed;
+  bottom: 175px;
   right: 20px;
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-size: 0.8em;
-  opacity: 0;
-  transition: opacity 0.5s;
-  pointer-events: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
 }
 
 /* Interactive area glow effect */
 .interactive-area-glow {
   position: absolute;
-  border: 2px solid rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6), inset 0 0 5px rgba(255, 255, 255, 0.6);
+  border-radius: var(--interactive-border-radius, 50%);
+  opacity: var(--interactive-opacity, 0.3);
+  border: var(--interactive-border-width, 4px) solid var(--interactive-border-color, rgba(255, 255, 255, 0.4));
+  box-shadow: var(--interactive-box-shadow, 0 0 20px rgba(255, 255, 255, 0.6));
+  z-index: var(--interactive-z-index, 105);
+  transition: var(--interactive-transition, all 0.3s ease);
   pointer-events: none;
-  z-index: 2;
-  animation: none;
 }
 
-/* Blinking animation for interactive areas */
+.interactive-area-glow.highlight {
+  opacity: var(--interactive-highlight-opacity, 0.8);
+  border-color: var(--interactive-highlight-border-color, rgba(255, 255, 255, 0.8));
+  box-shadow: var(--interactive-highlight-box-shadow, 0 0 30px rgba(255, 255, 255, 0.9));
+}
+
+.interactive-area-glow.blink {
+  animation: blink var(--interactive-blink-duration, 1.5s) var(--interactive-blink-timing, ease-in-out) infinite;
+}
+
 @keyframes blink {
-  0% { opacity: 0.2; }
-  50% { opacity: 1; }
-  100% { opacity: 0.2; }
+  0%, 100% {
+    opacity: var(--interactive-opacity, 0.3);
+    box-shadow: var(--interactive-box-shadow, 0 0 20px rgba(255, 255, 255, 0.6));
+  }
+  50% {
+    opacity: var(--interactive-highlight-opacity, 0.8);
+    box-shadow: var(--interactive-highlight-box-shadow, 0 0 30px rgba(255, 255, 255, 0.9));
+  }
 }
 
 .text-center {

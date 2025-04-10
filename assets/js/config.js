@@ -35,7 +35,40 @@ const config = {
     ui: {
         dialogFadeSpeed: 300,
         notificationDuration: 5000,
-        radioVolumeDefault: 0.5
+        radioVolumeDefault: 0.5,
+        keypad: {
+            showOnMobile: true,
+            interactionDistance: 150,
+            animationDuration: 500,
+            glowDuration: 1500,
+            imagePaths: {
+                neutral: 'assets/svg/directional-keypad-ui/keypad-neutral.svg',
+                up: 'assets/svg/directional-keypad-ui/keypad-select-up.svg',
+                right: 'assets/svg/directional-keypad-ui/keypad-select-right.svg',
+                down: 'assets/svg/directional-keypad-ui/keypad-select-down.svg',
+                left: 'assets/svg/directional-keypad-ui/keypad-select-left.svg'
+            }
+        },
+        interactiveAreas: {
+            normal: {
+                borderRadius: '50%',
+                opacity: 0.3,
+                borderWidth: '4px',
+                borderColor: 'rgba(255, 255, 255, 0.4)',
+                boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)',
+                zIndex: 105,
+                transition: 'all 0.3s ease'
+            },
+            highlight: {
+                opacity: 0.8,
+                borderColor: 'rgba(255, 255, 255, 0.8)',
+                boxShadow: '0 0 30px rgba(255, 255, 255, 0.9)'
+            },
+            blink: {
+                animationDuration: '1.5s',
+                animationTiming: 'ease-in-out'
+            }
+        }
     },
     
     // Game settings

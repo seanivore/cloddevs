@@ -103,7 +103,17 @@ function initializeWorld() {
     buildings.push(building);
     
     // Create interactive area (stoop) in front of each building
-    const interactiveArea = Environment.createInteractiveArea(scene, data.position.x, data.position.z + 6, data.id);
+    const interactiveArea = Environment.createInteractiveArea(
+      scene, 
+      camera,
+      data.position.x, 
+      data.position.z + 6, 
+      {
+        id: data.id,
+        width: 10,
+        depth: 5
+      }
+    );
     interactiveAreas.push(interactiveArea);
   });
   
@@ -111,7 +121,17 @@ function initializeWorld() {
   tower = BuildingRenderer.createRadioTower(scene);
   
   // Create interactive area around radio tower
-  const radioArea = Environment.createInteractiveArea(scene, 10, -10, 'radio');
+  const radioArea = Environment.createInteractiveArea(
+    scene, 
+    camera,
+    10, 
+    -10, 
+    {
+      id: 'radio',
+      width: 10,
+      depth: 10
+    }
+  );
   interactiveAreas.push(radioArea);
   
   // Add decorative flowers

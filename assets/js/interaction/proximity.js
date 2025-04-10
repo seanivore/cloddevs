@@ -1,5 +1,5 @@
 // Import dialog functions
-import { showBuildingInfo, showPopup } from '../ui/dialogs.js';
+import { showBuildingInfo, showTowerInfo, hideDialog } from '../ui/dialogs.js';
 
 // Check proximity to interactive elements
 export function checkProximity(playerMesh, interactiveAreas, buildings) {
@@ -11,17 +11,17 @@ export function checkProximity(playerMesh, interactiveAreas, buildings) {
     
     if (dist < 3) {
       // Determine which building or object this area belongs to
-      const buildingId = area.userData.buildingId;
+      const buildingId = area.userData.id;
       
       if (buildingId === 'radio') {
         // Radio tower interaction
-        showPopup('towerInfo');
+        showTowerInfo();
         interactable = { type: 'radio', id: 'radio' };
       } else {
         // Building interaction - find the matching building
         const building = buildings.find(b => b.userData.id === buildingId);
         if (building) {
-          showBuildingInfo(building.userData.title, building.userData.body);
+          showBuildingInfo(buildingId, building.userData.title, building.userData.body);
           interactable = { type: 'building', id: buildingId, data: building.userData };
         }
       }
@@ -79,10 +79,10 @@ export function processInteraction(interactable) {
   
   switch (interactable.type) {
     case 'building':
-      showBuildingInfo(interactable.data.title, interactable.data.body);
+      showBuildingInfo(interactable.id, interactable.data.title, interactable.data.body);
       break;
     case 'radio':
-      showPopup('towerInfo');
+      showTowerInfo();
       break;
   }
 }
