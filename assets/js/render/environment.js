@@ -4,7 +4,7 @@ import config from '../config.js';
 // Create ground with different textured sections
 export function createGround(scene) {
   // Main ground (grass)
-  const groundGeom = new THREE.PlaneGeometry(100, 100);
+  const groundGeom = new THREE.PlaneGeometry(150, 150); // Larger ground area
   const groundMat = new THREE.MeshLambertMaterial({ color: 0x88aa88 }); // Hard-coded grass color
   const ground = new THREE.Mesh(groundGeom, groundMat);
   ground.rotation.x = -Math.PI / 2;
@@ -14,57 +14,34 @@ export function createGround(scene) {
   return ground;
 }
 
-// Create path layout - narrower paths connecting buildings
+// Create path layout - paths connecting buildings in a cross pattern
 export function createPaths(scene) {
   const pathMat = new THREE.MeshLambertMaterial({ color: 0xCCCCCC }); // Light gray path
   const paths = [];
   
-  // Main vertical path (narrower)
-  const vertPathGeom = new THREE.PlaneGeometry(5, 30);
+  // Main vertical path (North-South)
+  const vertPathGeom = new THREE.PlaneGeometry(5, 65); // Longer to reach both N/S buildings
   const vertPath = new THREE.Mesh(vertPathGeom, pathMat);
   vertPath.rotation.x = -Math.PI / 2;
   vertPath.position.y = 0.01; // Just above ground
   scene.add(vertPath);
   paths.push(vertPath);
   
-  // Horizontal paths to buildings (narrower)
-  // Top row
-  const topLeftPathGeom = new THREE.PlaneGeometry(15, 3);
-  const topLeftPath = new THREE.Mesh(topLeftPathGeom, pathMat);
-  topLeftPath.rotation.x = -Math.PI / 2;
-  topLeftPath.position.set(-7.5, 0.01, -10); // To top left building
-  scene.add(topLeftPath);
-  paths.push(topLeftPath);
+  // Main horizontal path (East-West)
+  const horizPathGeom = new THREE.PlaneGeometry(65, 5); // Wider to reach both E/W buildings
+  const horizPath = new THREE.Mesh(horizPathGeom, pathMat);
+  horizPath.rotation.x = -Math.PI / 2;
+  horizPath.position.y = 0.01; // Just above ground
+  scene.add(horizPath);
+  paths.push(horizPath);
   
-  const topRightPathGeom = new THREE.PlaneGeometry(15, 3);
-  const topRightPath = new THREE.Mesh(topRightPathGeom, pathMat);
-  topRightPath.rotation.x = -Math.PI / 2;
-  topRightPath.position.set(7.5, 0.01, -10); // To top right building
-  scene.add(topRightPath);
-  paths.push(topRightPath);
-  
-  // Bottom row
-  const bottomLeftPathGeom = new THREE.PlaneGeometry(15, 3);
-  const bottomLeftPath = new THREE.Mesh(bottomLeftPathGeom, pathMat);
-  bottomLeftPath.rotation.x = -Math.PI / 2;
-  bottomLeftPath.position.set(-7.5, 0.01, 10); // To bottom left building
-  scene.add(bottomLeftPath);
-  paths.push(bottomLeftPath);
-  
-  const bottomRightPathGeom = new THREE.PlaneGeometry(15, 3);
-  const bottomRightPath = new THREE.Mesh(bottomRightPathGeom, pathMat);
-  bottomRightPath.rotation.x = -Math.PI / 2;
-  bottomRightPath.position.set(7.5, 0.01, 10); // To bottom right building
-  scene.add(bottomRightPath);
-  paths.push(bottomRightPath);
-  
-  // Path to radio tower
-  const radioPathGeom = new THREE.PlaneGeometry(3, 10);
-  const radioPath = new THREE.Mesh(radioPathGeom, pathMat);
-  radioPath.rotation.x = -Math.PI / 2;
-  radioPath.position.set(8.5, 0.01, -5); // Connect to radio tower
-  scene.add(radioPath);
-  paths.push(radioPath);
+  // Path to radio tower - should be in center now
+  const radioPathCircleGeom = new THREE.CircleGeometry(8, 16);
+  const radioPathCircle = new THREE.Mesh(radioPathCircleGeom, pathMat);
+  radioPathCircle.rotation.x = -Math.PI / 2;
+  radioPathCircle.position.set(0, 0.01, 0); // Center of the cross
+  scene.add(radioPathCircle);
+  paths.push(radioPathCircle);
   
   return paths;
 }
@@ -122,8 +99,8 @@ export function createFlowers(scene) {
     // Random position (avoiding paths)
     let x, z;
     do {
-      x = Math.random() * 80 - 40;
-      z = Math.random() * 80 - 40;
+      x = Math.random() * 120 - 60; // Wider distribution
+      z = Math.random() * 120 - 60; // Wider distribution
     } while (isOnPath(x, z));
     
     const flowerGroup = new THREE.Group();
@@ -132,25 +109,26 @@ export function createFlowers(scene) {
     const stemGeom = new THREE.CylinderGeometry(0.1, 0.1, 1, 8);
     const stemMat = new THREE.MeshLambertMaterial({ color: 0x00AA00 });
     const stem = new THREE.Mesh(stemGeom, stemMat);
-    stem.position.y = 0.5;
+    stem.position.y = 0.5; // Half the stem height
     flowerGroup.add(stem);
     
     // Blossom
     const blossomGeom = new THREE.SphereGeometry(0.3, 8, 8);
     const blossomMat = new THREE.MeshLambertMaterial({ color: 0xFF99AA }); // Pink flowers
     const blossom = new THREE.Mesh(blossomGeom, blossomMat);
-    blossom.position.y = 1.1;
+    blossom.position.y = 1.1; // At the top of the stem
     flowerGroup.add(blossom);
     
-    flowerGroup.position.set(x, 0, z);
+    // Position at ground level, not floating
+    flowerGroup.position.set(x, 0, z); // y=0 ensures it's at ground level
     scene.add(flowerGroup);
     flowers.push(flowerGroup);
     
-    // Store animation data
+    // Store animation data for gentle swaying
     flowerGroup.userData = {
       phase: Math.random() * Math.PI * 2,
       speed: 0.5 + Math.random() * 1.5,
-      baseY: flowerGroup.position.y
+      baseY: 0 // Set base at ground level
     };
   }
   
@@ -187,17 +165,30 @@ export function createHTMLFlowers() {
 
 // Check if a position is on a path
 export function isOnPath(x, z) {
-  // Main vertical path
-  if (Math.abs(x) < 5 && z > -25 && z < 25) return true;
-  // Horizontal paths
-  if (z > 7.5 && z < 12.5 && x < 0 && x > -15) return true; // Top left
-  if (z > 7.5 && z < 12.5 && x > 0 && x < 15) return true; // Top right
-  if (z > 22.5 && z < 27.5 && x < 0 && x > -15) return true; // Bottom left
-  if (z > 22.5 && z < 27.5 && x > 0 && x < 15) return true; // Bottom right
+  // Main cross paths with padding
+  const pathWidth = 6; // Width of the paths plus some padding
+  
+  // Vertical path (z-axis)
+  if (Math.abs(x) < pathWidth && Math.abs(z) < 35) return true;
+  
+  // Horizontal path (x-axis)
+  if (Math.abs(z) < pathWidth && Math.abs(x) < 35) return true;
+  
+  // Center circle for radio tower
+  if (Math.sqrt(x*x + z*z) < 10) return true;
+  
   // Buildings
-  if (Math.abs(x - -15) < 5 && Math.abs(z - 10) < 5) return true; // Top left building
-  if (Math.abs(x - 15) < 5 && Math.abs(z - 10) < 5) return true; // Top right building
-  if (Math.abs(x - -15) < 5 && Math.abs(z - 25) < 5) return true; // Bottom left building
-  if (Math.abs(x - 15) < 5 && Math.abs(z - 25) < 5) return true; // Bottom right building
+  // North building (apartment)
+  if (Math.abs(x) < 10 && z < -25 && z > -40) return true;
+  
+  // South building (token exchange)
+  if (Math.abs(x) < 10 && z > 25 && z < 40) return true;
+  
+  // East building (MCP lab)
+  if (Math.abs(z) < 10 && x > 25 && x < 40) return true;
+  
+  // West building (dev hub)
+  if (Math.abs(z) < 10 && x < -25 && x > -40) return true;
+  
   return false;
 }

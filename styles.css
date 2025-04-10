@@ -372,3 +372,17 @@ html, body {
 .text-center {
   text-align: center;
 }
+
+.instruction-text {
+  margin-top: 15px;
+  color: #9edbfa;
+  font-size: 0.7rem;
+  text-align: center;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}

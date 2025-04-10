@@ -1,7 +1,9 @@
+// Import modules
+import config from '../config.js';
+
 // Dialog elements cache
 let dialogElements = {
   welcomeMessage: null,
-  welcomeCloseBtn: null,
   genericBuildingPopup: null,
   buildingCloseBtn: null,
   buildingTitle: null,
@@ -15,7 +17,6 @@ export function initDialogs() {
   // Cache dialog elements
   dialogElements = {
     welcomeMessage: document.getElementById('welcomeMessage'),
-    welcomeCloseBtn: document.getElementById('welcomeCloseBtn'),
     genericBuildingPopup: document.getElementById('genericBuildingPopup'),
     buildingCloseBtn: document.getElementById('buildingCloseBtn'),
     buildingTitle: document.getElementById('buildingTitle'),
@@ -32,20 +33,33 @@ export function initDialogs() {
 
 // Set up dialog event listeners
 function setupDialogListeners() {
-  // Welcome dialog
-  dialogElements.welcomeCloseBtn.addEventListener('click', () => {
-    hideWelcomeMessage();
-  });
+  // Set up welcome message to close on any key press
+  document.addEventListener('keydown', handleKeyForWelcome);
   
   // Building dialog
-  dialogElements.buildingCloseBtn.addEventListener('click', () => {
-    hidePopup('genericBuildingPopup');
-  });
+  if (dialogElements.buildingCloseBtn) {
+    dialogElements.buildingCloseBtn.addEventListener('click', () => {
+      hideDialog(dialogElements.genericBuildingPopup);
+    });
+  }
   
   // Tower dialog
-  dialogElements.towerCloseBtn.addEventListener('click', () => {
-    hidePopup('towerInfo');
-  });
+  if (dialogElements.towerCloseBtn) {
+    dialogElements.towerCloseBtn.addEventListener('click', () => {
+      hideDialog(dialogElements.towerInfo);
+    });
+  }
+  
+  // Close dialogs when clicking outside
+  const dialogLayer = document.getElementById('dialog-layer');
+  if (dialogLayer) {
+    dialogLayer.addEventListener('click', (e) => {
+      // Only close if clicking directly on the dialog layer (not on dialog content)
+      if (e.target === dialogLayer) {
+        hideAllDialogs();
+      }
+    });
+  }
   
   // Close dialogs when pressing Escape key
   document.addEventListener('keydown', (event) => {
@@ -55,51 +69,63 @@ function setupDialogListeners() {
   });
 }
 
-// Show the welcome message dialog
-export function showWelcomeMessage() {
-  dialogElements.welcomeMessage.style.display = 'block';
-}
-
-// Hide the welcome message dialog
-export function hideWelcomeMessage() {
-  dialogElements.welcomeMessage.style.display = 'none';
-}
-
-// Show building-specific popup
-export function showBuildingInfo(title, body) {
-  dialogElements.buildingTitle.textContent = title;
-  dialogElements.buildingDescription.textContent = body;
-  showPopup('genericBuildingPopup');
-}
-
-// Show a specific popup by ID
-export function showPopup(id) {
-  const element = document.getElementById(id);
-  if (element) {
-    element.style.display = 'block';
+// Handle key press for welcome dialog
+function handleKeyForWelcome(e) {
+  if (dialogElements.welcomeMessage && dialogElements.welcomeMessage.classList.contains('active')) {
+    hideDialog(dialogElements.welcomeMessage);
+    // Remove the event listener after first use to prevent closing other dialogs
+    document.removeEventListener('keydown', handleKeyForWelcome);
   }
 }
 
-// Hide a specific popup by ID
-export function hidePopup(id) {
-  const element = document.getElementById(id);
-  if (element) {
-    element.style.display = 'none';
+// Show welcome message dialog
+export function showWelcomeMessage() {
+  if (dialogElements.welcomeMessage) {
+    dialogElements.welcomeMessage.classList.add('active');
+    document.getElementById('dialog-layer').classList.add('active');
+  }
+}
+
+// Show building info dialog
+export function showBuildingInfo(buildingId, title, description) {
+  if (dialogElements.genericBuildingPopup) {
+    // Set title and description
+    if (dialogElements.buildingTitle) dialogElements.buildingTitle.textContent = title || 'Building';
+    if (dialogElements.buildingDescription) dialogElements.buildingDescription.textContent = description || 'No information available.';
+    
+    // Show dialog
+    dialogElements.genericBuildingPopup.classList.add('active');
+    document.getElementById('dialog-layer').classList.add('active');
+  }
+}
+
+// Show tower info dialog
+export function showTowerInfo() {
+  if (dialogElements.towerInfo) {
+    dialogElements.towerInfo.classList.add('active');
+    document.getElementById('dialog-layer').classList.add('active');
+  }
+}
+
+// Hide a specific dialog
+export function hideDialog(dialog) {
+  if (dialog) {
+    dialog.classList.remove('active');
+    
+    // Check if any dialogs are still active
+    const activeDialogs = document.querySelectorAll('.dialog-box.active');
+    if (activeDialogs.length === 0) {
+      document.getElementById('dialog-layer').classList.remove('active');
+    }
   }
 }
 
 // Hide all dialogs
 export function hideAllDialogs() {
-  hideWelcomeMessage();
-  hidePopup('genericBuildingPopup');
-  hidePopup('towerInfo');
-}
-
-// Check if any dialog is currently open
-export function isDialogOpen() {
-  return (
-    dialogElements.welcomeMessage.style.display === 'block' ||
-    dialogElements.genericBuildingPopup.style.display === 'block' ||
-    dialogElements.towerInfo.style.display === 'block'
-  );
+  const dialogs = document.querySelectorAll('.dialog-box');
+  dialogs.forEach(dialog => {
+    dialog.classList.remove('active');
+  });
+  
+  document.getElementById('dialog-layer').classList.remove('active');
 }

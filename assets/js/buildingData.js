@@ -28,7 +28,7 @@ const buildingData = {
     }
   },
   
-  // MCP Development Lab (Shop-Looking Building)
+  // MCP Development Lab (Shop-Looking Building) - East
   mcpLab: {
     id: 'mcp-lab',
     name: 'MCP Development Lab',
@@ -51,7 +51,7 @@ const buildingData = {
     }
   },
   
-  // Token Exchange (Gym-Looking Building)
+  // Token Exchange (Gym-Looking Building) - South
   tokenExchange: {
     id: 'token-exchange',
     name: 'Token Exchange',
@@ -74,7 +74,7 @@ const buildingData = {
     }
   },
   
-  // Developer Hub (Home with AI IDE)
+  // Developer Hub (Home with AI IDE) - West
   devHub: {
     id: 'dev-hub',
     name: 'Developer Hub',
@@ -97,10 +97,10 @@ const buildingData = {
     }
   },
   
-  // Apartment Building
+  // Apartment Building - North
   apartmentBuilding: {
     id: 'apartment',
-    name: 'Taller Multi-Story Apartment',
+    name: 'Apartment Building',
     description: "ZERO MARKETING IN OUR CONTENT FEED.\n\nYou earn $CLAUD$ for watching tutorials and reading posts. Tokenization identifies the signal from the noise based on genuine community behavior. No brand can hijack your feed.",
     position: { x: 0, y: 0, z: -30 },
     dimensions: { width: 14, height: 12, depth: 14 },

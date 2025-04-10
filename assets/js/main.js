@@ -36,11 +36,11 @@ function init() {
     antialias: true
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0xDDDDDD, 0);
+  renderer.setClearColor(0x88aa88, 1); // Set a grass-colored background
 
   scene = new THREE.Scene();
 
-  // Isometric-like camera
+  // Isometric-like camera - positioned higher for a more zoomed out view
   const aspect = window.innerWidth / window.innerHeight;
   camera = new THREE.PerspectiveCamera(
     45, 
@@ -48,7 +48,7 @@ function init() {
     0.1, 
     1000
   );
-  camera.position.set(0, 40, 40);
+  camera.position.set(0, 80, 80); // Positioned much higher to see more of the town
   camera.lookAt(new THREE.Vector3(0, 0, 0));
 
   // Basic directional light
