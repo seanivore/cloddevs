@@ -5,7 +5,7 @@ import config from '../config.js';
 export function createGround(scene) {
   // Main ground (grass)
   const groundGeom = new THREE.PlaneGeometry(100, 100);
-  const groundMat = new THREE.MeshLambertMaterial({ color: config.colors.ground });
+  const groundMat = new THREE.MeshLambertMaterial({ color: 0x88aa88 }); // Hard-coded grass color
   const ground = new THREE.Mesh(groundGeom, groundMat);
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = -0.1; // Slightly below everything else
@@ -16,7 +16,7 @@ export function createGround(scene) {
 
 // Create path layout - narrower paths connecting buildings
 export function createPaths(scene) {
-  const pathMat = new THREE.MeshLambertMaterial({ color: config.colors.path });
+  const pathMat = new THREE.MeshLambertMaterial({ color: 0xCCCCCC }); // Light gray path
   const paths = [];
   
   // Main vertical path (narrower)
@@ -73,7 +73,7 @@ export function createPaths(scene) {
 export function createInteractiveArea(scene, x, z, buildingId) {
   // Dark gray stoop with slight elevation
   const stoopGeom = new THREE.BoxGeometry(4, 0.2, 4);
-  const stoopMat = new THREE.MeshLambertMaterial({ color: config.colors.stoop });
+  const stoopMat = new THREE.MeshLambertMaterial({ color: 0x999999 }); // Dark gray
   const stoop = new THREE.Mesh(stoopGeom, stoopMat);
   stoop.position.set(x, 0.1, z); // Slightly raised
   stoop.userData = { buildingId: buildingId }; // Store which building/object this stoop belongs to
@@ -82,9 +82,9 @@ export function createInteractiveArea(scene, x, z, buildingId) {
   // Add shadow effect
   const shadowGeom = new THREE.PlaneGeometry(4.4, 4.4);
   const shadowMat = new THREE.MeshBasicMaterial({ 
-    color: config.colors.stoopShadow.color, 
+    color: 0x000000, 
     transparent: true, 
-    opacity: config.colors.stoopShadow.opacity
+    opacity: 0.2
   });
   const shadow = new THREE.Mesh(shadowGeom, shadowMat);
   shadow.rotation.x = -Math.PI / 2;

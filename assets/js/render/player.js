@@ -5,7 +5,7 @@ import config from '../config.js';
 export function createPlayerMesh(scene) {
   // Simple placeholder sphere for now
   const playerGeom = new THREE.SphereGeometry(1, 16, 16);
-  const playerMat = new THREE.MeshLambertMaterial({ color: config.colors.player });
+  const playerMat = new THREE.MeshLambertMaterial({ color: 0x3366aa }); // Hard-coded player color
   const playerMesh = new THREE.Mesh(playerGeom, playerMat);
   playerMesh.position.set(0, 1, -5); // Start at top middle of the path
   scene.add(playerMesh);
@@ -46,28 +46,31 @@ export function animatePlayer(playerState, keyboardState, deltaTime) {
   // Update player's moving state
   playerState.isMoving = isMoving;
   
+  const MOVEMENT_SPEED = 3; // hardcoded for now
+  
   if (isMoving) {
     // Determine direction based on keys
     if (keyboardState.w || keyboardState.ArrowUp) {
       playerState.direction = 'up';
-      playerState.y -= config.MOVEMENT_SPEED * deltaTime;
+      playerState.y -= MOVEMENT_SPEED * deltaTime;
     }
     if (keyboardState.s || keyboardState.ArrowDown) {
       playerState.direction = 'down';
-      playerState.y += config.MOVEMENT_SPEED * deltaTime;
+      playerState.y += MOVEMENT_SPEED * deltaTime;
     }
     if (keyboardState.a || keyboardState.ArrowLeft) {
       playerState.direction = 'left';
-      playerState.x -= config.MOVEMENT_SPEED * deltaTime;
+      playerState.x -= MOVEMENT_SPEED * deltaTime;
     }
     if (keyboardState.d || keyboardState.ArrowRight) {
       playerState.direction = 'right';
-      playerState.x += config.MOVEMENT_SPEED * deltaTime;
+      playerState.x += MOVEMENT_SPEED * deltaTime;
     }
     
     // Keep player within bounds
-    playerState.x = Math.max(0, Math.min(config.WORLD_SIZE - playerState.width, playerState.x));
-    playerState.y = Math.max(0, Math.min(config.WORLD_SIZE - playerState.height, playerState.y));
+    const WORLD_SIZE = config.map.width; // Using map width as world size
+    playerState.x = Math.max(0, Math.min(WORLD_SIZE - playerState.width, playerState.x));
+    playerState.y = Math.max(0, Math.min(WORLD_SIZE - playerState.height, playerState.y));
     
     // Update animation frame
     playerState.frameCounter = (playerState.frameCounter + 1) % playerState.frameDelay;
