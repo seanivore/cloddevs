@@ -28,12 +28,12 @@ const buildingData = {
     }
   },
   
-  // MCP Development Lab
+  // MCP Development Lab (Shop-Looking Building)
   mcpLab: {
     id: 'mcp-lab',
     name: 'MCP Development Lab',
-    description: 'Where new Model Context Protocols are researched and developed.',
-    position: { x: -25, y: 0, z: 15 },
+    description: 'WE GAMIFIED CODING.\n\nThe tools are validated by usage. You earn $CLAUD$ every time you use a minted MCP. Total $CLAUD$ earned by everyone ranks the MCP tools. Knowing what tools are the best is as easy as using your favorites.',
+    position: { x: 30, y: 0, z: 0 },
     dimensions: { width: 12, height: 8, depth: 10 },
     color: 0x22AAFF,
     type: 'development',
@@ -41,7 +41,7 @@ const buildingData = {
     dialogId: 'mcp-lab-dialog',
     content: {
       title: 'MCP Development Lab',
-      description: `The cutting-edge research facility where our developers create and refine new Model Context Protocols.`,
+      description: `WE GAMIFIED CODING.\n\nThe tools are validated by usage. You earn $CLAUD$ every time you use a minted MCP. Total $CLAUD$ earned by everyone ranks the MCP tools. Knowing what tools are the best is as easy as using your favorites.`,
       features: [
         'Protocol testing environments',
         'Collaborative workspaces',
@@ -51,12 +51,12 @@ const buildingData = {
     }
   },
   
-  // Token Exchange
+  // Token Exchange (Gym-Looking Building)
   tokenExchange: {
     id: 'token-exchange',
     name: 'Token Exchange',
-    description: 'The central marketplace for Clôd tokens and protocol access.',
-    position: { x: 20, y: 0, z: -15 },
+    description: "IT'S GAMIFIED SOCIAL MEDIA.\n\nYou reply to a post, you share knowledge, you earn $CLAUD$. This self-sustaining community automates curation of development resources and fosters a helpful environment.",
+    position: { x: 0, y: 0, z: 30 },
     dimensions: { width: 14, height: 10, depth: 14 },
     color: 0xFFAA22,
     type: 'financial',
@@ -64,7 +64,7 @@ const buildingData = {
     dialogId: 'token-exchange-dialog',
     content: {
       title: 'Token Exchange',
-      description: `The economic center of our community where developers can exchange tokens for services and protocol access.`,
+      description: `IT'S GAMIFIED SOCIAL MEDIA.\n\nYou reply to a post, you share knowledge, you earn $CLAUD$. This self-sustaining community automates curation of development resources and fosters a helpful environment.`,
       features: [
         'Token trading platform',
         'Protocol access marketplace',
@@ -74,12 +74,12 @@ const buildingData = {
     }
   },
   
-  // Developer Hub
+  // Developer Hub (Home with AI IDE)
   devHub: {
     id: 'dev-hub',
     name: 'Developer Hub',
-    description: 'A collaborative space for developers to work together on projects.',
-    position: { x: 15, y: 0, z: 25 },
+    description: "GET PAID FOR YOUR DATA.\n\nContribute code or share what you're building. Earn $CLAUD$ for valuable posts. Decentralized community means you keep the revenue; your content grows the ecosystem.",
+    position: { x: -30, y: 0, z: 0 },
     dimensions: { width: 16, height: 6, depth: 12 },
     color: 0x22CC88,
     type: 'community',
@@ -87,7 +87,7 @@ const buildingData = {
     dialogId: 'dev-hub-dialog',
     content: {
       title: 'Developer Hub',
-      description: `The community center where developers collaborate, share ideas, and build the future of Clôd Cluster together.`,
+      description: `GET PAID FOR YOUR DATA.\n\nContribute code or share what you're building. Earn $CLAUD$ for valuable posts. Decentralized community means you keep the revenue; your content grows the ecosystem.`,
       features: [
         'Community forums and discussion areas',
         'Project showcases',
@@ -97,20 +97,20 @@ const buildingData = {
     }
   },
   
-  // Governance Hall
-  governanceHall: {
-    id: 'governance-hall',
-    name: 'Governance Hall',
-    description: 'Where community decisions and protocol updates are proposed and voted on.',
-    position: { x: -20, y: 0, z: -20 },
+  // Apartment Building
+  apartmentBuilding: {
+    id: 'apartment',
+    name: 'Taller Multi-Story Apartment',
+    description: "ZERO MARKETING IN OUR CONTENT FEED.\n\nYou earn $CLAUD$ for watching tutorials and reading posts. Tokenization identifies the signal from the noise based on genuine community behavior. No brand can hijack your feed.",
+    position: { x: 0, y: 0, z: -30 },
     dimensions: { width: 14, height: 12, depth: 14 },
-    color: 0xAA44AA,
-    type: 'governance',
+    color: 0x9E9EB4,
+    type: 'apartment',
     interactive: true,
-    dialogId: 'governance-hall-dialog',
+    dialogId: 'apartment-dialog',
     content: {
-      title: 'Governance Hall',
-      description: `The democratic center of our DAO where community members propose, discuss, and vote on important decisions.`,
+      title: 'Apartment Building',
+      description: `ZERO MARKETING IN OUR CONTENT FEED.\n\nYou earn $CLAUD$ for watching tutorials and reading posts. Tokenization identifies the signal from the noise based on genuine community behavior. No brand can hijack your feed.`,
       features: [
         'Proposal submission system',
         'Voting mechanisms',

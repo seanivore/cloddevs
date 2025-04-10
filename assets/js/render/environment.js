@@ -76,7 +76,11 @@ export function createInteractiveArea(scene, x, z, buildingId) {
   const stoopMat = new THREE.MeshLambertMaterial({ color: 0x999999 }); // Dark gray
   const stoop = new THREE.Mesh(stoopGeom, stoopMat);
   stoop.position.set(x, 0.1, z); // Slightly raised
-  stoop.userData = { buildingId: buildingId }; // Store which building/object this stoop belongs to
+  stoop.userData = { 
+    buildingId: buildingId,
+    isInteractive: true, 
+    class: 'interactive-stoop'
+  }; // Store which building/object this stoop belongs to
   scene.add(stoop);
   
   // Add shadow effect
@@ -90,6 +94,21 @@ export function createInteractiveArea(scene, x, z, buildingId) {
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.set(x, 0.05, z);
   scene.add(shadow);
+  
+  // After the scene is rendered, create an HTML element for this stoop
+  setTimeout(() => {
+    const interactiveArea = document.createElement('div');
+    interactiveArea.className = 'interactive-stoop';
+    interactiveArea.dataset.buildingId = buildingId;
+    interactiveArea.style.position = 'absolute';
+    interactiveArea.style.width = '4rem';
+    interactiveArea.style.height = '4rem';
+    interactiveArea.style.pointerEvents = 'none';
+    interactiveArea.style.opacity = '0.01';
+    
+    // Position will be updated in the render loop
+    document.getElementById('ui-layer').appendChild(interactiveArea);
+  }, 1000);
   
   return stoop;
 }

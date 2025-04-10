@@ -9,6 +9,7 @@ import * as Effects from './ui/effects.js';
 import * as PlayerController from './interaction/player.js';
 import * as ProximitySystem from './interaction/proximity.js';
 import * as RadioSystem from './interaction/radio.js';
+import keypadManager from './keypads.js';
 
 // Global references
 let scene, camera, renderer;
@@ -142,6 +143,9 @@ function initializeUI() {
   
   // Initialize UI effects
   Effects.initUIEffects();
+  
+  // Initialize keypad manager
+  keypadManager.init();
 }
 
 // === Window resize ===
