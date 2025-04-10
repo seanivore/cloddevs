@@ -1,91 +1,68 @@
-# Homepage Content
-----
+# Finalized Landing Page Text
+> Still a living document, growing with finalized text. 
 
-## Metadata 
-Meta-title: CLAUD Cluster | Community-Owned AI Developer Ecosystem
-Meta-summary: Community-owned platform that rewards developers for sharing knowledge. Tokenized design validates & curates the best tools & educational resources, not marketing.
-Meta-thumbnail (1200px x 630px): 
+## Welcome Text Box
+> Located on the upper-left of the page.
 
----- 
+<center>WELCOME!</center>
+<center>~to dev town~</center>
 
-# Our Valuable Features
+The community's tokenized design identifies the best AI coding tools, curate your news feed, + no marketing or ads are allowed.
 
-## **Navigating the Developer Revolution**
-**Headline:** *Building Infrastructure for 16.3 Million New Developers*  
-**Placeholder:** While traditional tech centralizes value (billion-dollar valuations with just 20 employees), $CLAUD creates infrastructure ensuring the AI revolution benefits everyone. We're building the foundation for sustainable growth in a radically changing development landscape.
+We gamified your data. *You own it.*
 
-## **Community-Owned Knowledge Graph**
-**Headline:** *The Most Valuable Dataset You'll Ever Own*  
-**Placeholder:** Unlike platforms where corporations capture your behavior as profit, $CLAUD's community collectively owns the most comprehensive map of AI development patterns ever created. This isn't just data—it's a crystal ball for the future of development that benefits those who create it.
+<center>$DEV$ $CODE$ $LIFE$</center>
 
-## **Natural Value Recognition**
-**Headline:** *Your Work Finally Has Permanent Value*  
-**Placeholder:** No new workflows or platforms to learn. $CLAUD enhances what developers already do naturally, transforming everyday actions into permanent value. Share once, earn forever as your contributions continue helping others through our tokenized reward system.
+### Logic
 
-## **Democratic Tool Discovery**
-**Headline:** *Quality Through Usage, Not Marketing*  
-**Placeholder:** Stop wasting hours evaluating over-hyped tools. $CLAUD surfaces quality through actual usage patterns, not marketing budgets. Our community verification creates transparent, manipulation-resistant discovery without centralized gatekeepers.
+1. I made a SVG of a keyboard with buttons pressed as a visual UI navigation prompt. This makes sense on a different part of the page. Details below. 
 
-## **Dynamic Learning Paths**
-**Headline:** *Education That Evolves With Technology*  
-**Placeholder:** Traditional education can't match AI's pace. $CLAUD generates personalized learning paths based on verified success patterns, not theoretical curriculum. Navigate the overwhelming landscape with evidence-based guidance that updates in real-time.
+2. I'm trying to give it a `vibe coder` feel, though am hesitant to use the phrasing because it feels like a quick peak and subside type of fad phrasing. Admittedly, it was hard to think of what to call "people who code AI-first". Now I think that the rising, soon to be norm, will be "AI-Pair Development". However, I'm also trying *not* to lead with AI because, even though it will take a bit longer to get there, it is the norm and will eventually feel overstated. The place to lead with AI is in the tools. 
 
-## **Blockchain's Developer Pipeline**
-**Headline:** *Bringing Millions to Web3 Through Practical Utility*  
-**Placeholder:** AI developers represent blockchain's greatest adoption opportunity. $CLAUD creates a natural on-ramp through everyday utility, not ideology. We don't just bring developers to Solana—we create genuine understanding through direct experience.
+3. Domains were a few dollars each. We bought a collection. They will represent parts of the ecosystem. Before the 13 March 2026 renewal we can decide what to keep. 
 
-----
+My favorite for being all-purpose is **dev-code.life**, particularly "CODE LIFE". 
 
-# The Clôd Cluster
-A space for the modern coder to earn currency for engaging in their community. 
+- **JOIN**
+  - clod.app
+- **TOOLS**
+  - ai-dev.tools
+- **FORUM**
+  - code-dev.help 
+  - ai-code.help 
+  - ai-dev.help 
+- **LIFESTYLE**
+  - dev-code.life 
+  - code-dev.life 
+  - ai-dev.life 
 
-## Philosophical Strategy
-Preparing for a post-corporate capitalist world by empowering user-owned data to create a new norm of decentralized value distribution. 
+## Keyboard SVG
+> Located at the bottom-right-of-center of the page. 
 
-## Gamification Elevates the Best Content, Not Marketing  
-Using a carefully designed system, real cryptocurrency is distributed as rewards for user behaviors, it ensures your feed is nothing other than entertaining, valuable, quality uploaded and posts. 
+They are semi-transparent, so that the background shows through (trendy). It would be cool to have them change according to the key being pressed. Additionally, leaving them on the screen will make use mobile-friendly, unless we end up wanting to simplify the UI for mobile. We'll see when we get there. 
 
-**Instead of selling user data, it is tokenized**
+- Neutral: `./assets/svg/directional-keypad-ui/keypad-neutral.svg`
+- Select Down: `./assets/svg/directional-keypad-ui/keypad-select-down.svg`
+- Select Left: `./assets/svg/directional-keypad-ui/keypad-select-left.svg`
+- Select Right: `./assets/svg/directional-keypad-ui/keypad-select-right.svg`
+- Select Up: `./assets/svg/directional-keypad-ui/keypad-select-up.svg`
 
-Gamification effectively ensures only the legit answers surface to your technical forum questions; trolls can't use engagement to get visibility. 
+Sequence: 
 
-When you participate, it cuts out the noise and amps up the signal. 
+1. Page load 
+2. *Everything* fades in
+3. Keyboard SVG pops up
 
-**You're paid for your engagement**
+  > They can appear rather suddenly because it's the last thing to load and the first thing the User will need to use. 
 
-Every time you use a tool, comment, post, share a build, exchange knowledge, or otherwise help the community grow.
+  > Re: *Everything* —— the flow for which we can nail down in full later to make sure it's seamless and that we're emphasizing the appropriate UI where and when we should be emphasized. 
 
-This is the equivalent of the engagement data social media companies use to tell you what to watch or read next, while pocketing billions in revenue. 
+4. Animate so that the keys go LEFT, RIGHT, LEFT, RIGHT, UP, DOWN 
 
-The difference is profound: 
- - No one can pay to push out terrible content. 
- - No brands can hire a giant team of marketers to make sure you see what they want. 
- - NO ADVERTISERS PROMOTE STUFF YOU NEVER NEEDED. 
+  > During this time, text will have faded-in and then faded-out. 
 
-Instead, the transparent and trackable tokenization of your engagement data is used to reward YOU. This translates into information from the entire community that tells the platform what videos are worth watching, which tools actually work, and which creators are worth following.
+  > "Tap the keys to navigate to the touch-points." 
 
-## Clôd Protocol's goal 
- - To advance your career, your reputation, and your wallet. 
- - To ensure that this community leads the industry showing 43 million other developers what people want to see, use, and build. 
- - To ensure that this cluster of vibe coders set the trends thanks to real data. 
+5. You'll see on the map while everything is colored in the proper aesthetic, the standing area around the Tower, Apartment, Gym, and Shop have dual neon-lighting stroke. 
 
-### Website Documents
-- [PROMPT.md](./PROMPT.md)
-- [SPECIFICATIONS.md](./SPECIFICATIONS.md)
-- [index.md](./assets/content/00-index/index.md)
-- [index.html](./index.html)
-- [styles.css](./styles.css)
-
-### Entire $CLAUD Project
-- [Strategic Philosophy](./assets/docs/STRATEGIC_PHILOSOPHY.md)
-- [Grant Submission Details](./assets/docs/GRANTME.md)
-- [Project Roadmap](./assets/docs/05_DEVELOPMENT_PHASES.md)
-- [Risk Analysis](./assets/docs/RISK_ANALYSIS.md)
-
-### Technical Documentation
-- [MCP Transport Layer](./assets/docs/01_MCP_TRANSPORT_LAYER.md)
-- [Token Economics](./assets/docs/02_TOKEN_ECONOMICS.md)
-- [User Interaction](./assets/docs/03_USER_INTERACTION.md)
-- [Community Management](./assets/docs/04_COMMUNITY_MANAGEMENT.md)
-- [Development Phases](./assets/docs/05_DEVELOPMENT_PHASES.md)
-- [Infrastructure Requirements](./assets/docs/06_INFRASTRUCTURE_REQUIREMENTS.md)
+  > This is a visual clue for the User to know that they can tap the keys to navigate to the touch-points. We should blink them in sequence with the keys and then in order after 2.5 seconds (the time it takes for a human to read "Tap the keys..."). 
