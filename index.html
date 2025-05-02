@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
   <meta name="description" content="Explore the Clôd Cluster community in our interactive pixel town">
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  
+
   <!-- Favicon links -->
   <link rel="icon" type="image/png" href="assets/images/favicon/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="assets/images/favicon/favicon.svg" />
@@ -16,10 +17,11 @@
   <meta name="apple-mobile-web-app-title" content="$CLAUD$" />
   <link rel="manifest" href="assets/images/favicon/site.webmanifest" />
 </head>
+
 <body>
   <!-- Game canvas layers -->
   <canvas id="sceneCanvas"></canvas>
-  
+
   <!-- HTML layers for additional elements -->
   <div id="lower-layer-art" class="game-layer"></div>
   <div id="character-layer" class="game-layer">
@@ -28,18 +30,18 @@
   </div>
   <div id="ui-layer" class="game-layer">
     <button id="toggleRadioBtn" aria-label="Toggle Radio">📻</button>
-    
+
     <!-- Directional keypad UI -->
     <div id="keypad-container" class="keypad-container">
       <img id="keypad-svg" src="assets/svg/directional-keypad-ui/keypad-neutral.svg" alt="Directional keypad">
     </div>
-    
+
     <!-- Tap keys instruction -->
     <div id="keys-instruction" class="keys-instruction">
       Tap the keys to navigate to the touch-points.
     </div>
   </div>
-  
+
   <!-- Dialog boxes layer -->
   <div id="dialog-layer" class="game-layer">
     <!-- Welcome message dialog -->
@@ -47,13 +49,14 @@
       <h2 class="dialog-title">WELCOME!</h2>
       <div class="dialog-content">
         <p>~to dev town~</p>
-        <p>The community's tokenized design identifies the best AI coding tools, curate your news feed, + no marketing or ads are allowed.</p>
+        <p>The community's tokenized design identifies the best AI coding tools, curate your news feed, + no marketing
+          or ads are allowed.</p>
         <p>We gamified your data. <em>You own it.</em></p>
         <p class="text-center">$DEV$ $CODE$ $LIFE$</p>
         <p class="instruction-text">Press any key to continue</p>
       </div>
     </div>
-    
+
     <!-- Generic building info popup -->
     <div id="genericBuildingPopup" class="dialog-box">
       <h2 class="dialog-title" id="buildingTitle">Building Name</h2>
@@ -62,20 +65,22 @@
       </div>
       <button class="dialog-button" id="buildingCloseBtn">Close</button>
     </div>
-    
+
     <!-- Tower radio station info -->
     <div id="towerInfo" class="dialog-box">
       <h2 class="dialog-title">Community Radio Tower</h2>
       <div class="dialog-content">
-        <p>Welcome to the heart of our community! This is where we broadcast updates, tutorials, and community highlights.</p>
+        <p>Welcome to the heart of our community! This is where we broadcast updates, tutorials, and community
+          highlights.</p>
         <p>Tune in to learn about our latest developments and how you can contribute to the project.</p>
       </div>
       <button class="dialog-button" id="towerCloseBtn">Close</button>
     </div>
   </div>
-  
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
   <script type="module" src="assets/js/main.js"></script>
 </body>
+
 </html>

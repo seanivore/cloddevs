@@ -1,0 +1,17 @@
+{
+	"folders": [
+        {
+            "name": "cloddevs",
+            "path": ".."
+        },
+        {
+            "name": "ai-dev-docs",
+            "path": "../../_resources/ai-dev-docs"
+        }
+    ],
+    "extensions": {
+        "recommendations": [
+            "juanblanco.solidity"
+        ]
+    }
+}

@@ -1,4 +1,4 @@
-# Read Me for Claude
+# Project Details 
 
 ## To Preview 
 
